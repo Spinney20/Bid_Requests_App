@@ -1,10 +1,18 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
 import textwrap
+import os
+from email import encoders
 
-def generare_mesaj(materiale, nume_licitatie, numar_cn):
+def generare_mesaj(materiale, nume_licitatie, numar_cn, documente=None, link_transfernow=None):
+    """
+    Genereaza corpul mesajului pentru e-mail.
+    """
+    import textwrap
 
+    # Partea de inceput a mesajului
     corp_mesaj = textwrap.dedent(f"""
     Buna ziua,
 
@@ -14,16 +22,28 @@ def generare_mesaj(materiale, nume_licitatie, numar_cn):
     In acest context, am aprecia foarte mult sprijinul dumneavoastra in furnizarea unei oferte de pret pentru:
     """)
     
+    # Adauga lista de materiale
     for material, detalii in materiale.items():
         corp_mesaj += f" - {material} – {detalii['cantitate']} {detalii['unitate_de_masura']}\n"
-    
+
+    # Adauga lista de documente daca exista
+    if documente:
+        corp_mesaj += "\nPentru a veni in sprijinul formularii unei oferte de pret va atasam:\n"
+        for document in documente:
+            corp_mesaj += f" - {document.split('/')[-1]}\n"  # Afiseaza doar numele fisierului
+
+    if link_transfernow:
+        corp_mesaj += f"\nPentru a putea formula o oferta de pret va atasam urmatoarele documente relevante in urmatorul link:\n{link_transfernow}\n"
+
+    # Inchiderea mesajului
     corp_mesaj += "\nCu stima,\nViarom Construct"
     return corp_mesaj
 
 
-def trimite_email(destinatar, subiect, corp_mesaj):
+
+def trimite_email(destinatar, subiect, corp_mesaj, documente=None):
     """
-    Trimite email folosind serverul SMTP Outlook.
+    Trimite email folosind serverul SMTP Outlook, cu posibilitatea de a adauga atasamente.
     """
     email_sender = 'andrei.dobre@viarom.ro'  # adresa mail
     email_password = 'Stilpeni2023!'  # parola
@@ -37,6 +57,22 @@ def trimite_email(destinatar, subiect, corp_mesaj):
     mesaj['Subject'] = subiect
     mesaj.attach(MIMEText(corp_mesaj, 'plain'))
 
+    # Adaugare documente atasate
+    if documente:
+        for fisier in documente:
+            try:
+                with open(fisier, "rb") as attachment:
+                    part = MIMEBase("application", "octet-stream")
+                    part.set_payload(attachment.read())
+                encoders.encode_base64(part)
+                part.add_header(
+                    "Content-Disposition",
+                    f"attachment; filename= {os.path.basename(fisier)}",
+                )
+                mesaj.attach(part)
+            except Exception as e:
+                print(f"Eroare la atasarea fisierului {fisier}: {e}")
+
     try:
         # Conectare la serverul SMTP
         server = smtplib.SMTP(smtp_server, smtp_port)
@@ -48,8 +84,7 @@ def trimite_email(destinatar, subiect, corp_mesaj):
         server.quit()
         print("E-mail trimis cu succes!")
     except Exception as e:
-        # daca avem eroare afisam asta
-        print(f"Eroare la trimiterea e-mailului {e}")
+        print(f"Eroare la trimiterea e-mailului: {e}")
 
 if __name__ == '__main__':
     # Solicitare subiect e-mail
