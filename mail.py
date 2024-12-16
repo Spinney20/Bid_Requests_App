@@ -1,22 +1,25 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import textwrap
 
 def generare_mesaj(materiale, nume_licitatie, numar_cn):
-    
-    corp_mesaj = f'''
+
+    corp_mesaj = textwrap.dedent(f"""
     Buna ziua,
 
-    Viarom Construct intenționează să participe la licitația: 
-    “{nume_licitatie}” (număr anunț: {numar_cn}).
+    Viarom Construct intentioneaza sa participe la licitatia: 
+    “{nume_licitatie}” (numar anunt: {numar_cn}).
 
-    În acest context, am aprecia foarte mult sprijinul dumneavoastră în furnizarea unei oferte de preț pentru:
-    '''
-    for material, detalii in materiale.items():
-        corp_mesaj += f"- {material} – {detalii['cantitate']} {detalii['unitate_de_masura']}\n"
+    In acest context, am aprecia foarte mult sprijinul dumneavoastra in furnizarea unei oferte de pret pentru:
+    """)
     
-    corp_mesaj += "\nCu stimă,\nViarom Construct"
+    for material, detalii in materiale.items():
+        corp_mesaj += f" - {material} – {detalii['cantitate']} {detalii['unitate_de_masura']}\n"
+    
+    corp_mesaj += "\nCu stima,\nViarom Construct"
     return corp_mesaj
+
 
 def trimite_email(destinatar, subiect, corp_mesaj):
     """

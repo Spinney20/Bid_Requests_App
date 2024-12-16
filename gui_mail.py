@@ -10,7 +10,7 @@ class EmailApp:
 
         self.root = root
         self.root.title("Cerere de Oferta - Personalizat")
-        self.root.geometry("700x500")
+        self.root.geometry("700x700")
         self.root.resizable(True, True)  # Permite redimensionarea
 
         # Adaugare logo
@@ -53,6 +53,10 @@ class EmailApp:
         self.label_materiale = ctk.CTkLabel(frame_materiale, text="Materiale adaugate: 0", font=("Arial", 12), text_color="#1f4e78")  # Albastru
         self.label_materiale.grid(row=0, column=1, padx=10, pady=10)
 
+        # Frame pentru lista de materiale adaugate
+        self.frame_lista_materiale = ctk.CTkFrame(root, fg_color="transparent", height = 0)
+        self.frame_lista_materiale.pack(pady=10, padx=20, fill="x")
+
         # Sectiune butoane
         frame_buttons = ctk.CTkFrame(root, corner_radius=15, fg_color="#f0f0f0")  # Gri deschis
         frame_buttons.pack(pady=20, padx=20, fill="x")
@@ -86,12 +90,46 @@ class EmailApp:
                     # Adaug materialul in lista daca toate campurile sunt completate
                     self.materiale.append({'material': material, 'cantitate': cantitate, 'unitate_de_masura': unitate})
                     self.label_materiale.configure(text=f"Materiale adaugate: {len(self.materiale)}")
+                    self.actualizeaza_lista_materiale()
                 else:
                     messagebox.showwarning("Eroare", "Unitatea de masura este necesara!", parent=self.root)
             else:
                 messagebox.showwarning("Eroare", "Cantitatea este necesara!", parent=self.root)
 
+    def actualizeaza_lista_materiale(self):
+        # Stergem toate widget-urile existente din frame
+        for widget in self.frame_lista_materiale.winfo_children():
+            widget.destroy()
 
+        # Recream lista de materiale cu un buton pentru stergere
+        for idx, material in enumerate(self.materiale):
+            row_frame = ctk.CTkFrame(self.frame_lista_materiale, fg_color="transparent")
+            row_frame.pack(fill="x", pady=2)
+
+            # Text pentru material
+            material_text = f"{idx + 1}. {material['material']} - {material['cantitate']} {material['unitate_de_masura']}"
+            label_material = ctk.CTkLabel(row_frame, text=material_text, anchor="w", font=("Arial", 12))
+            label_material.pack(side="left", padx=5, pady=2)
+
+            # Buton X pentru stergere
+            btn_delete = ctk.CTkButton(
+                row_frame, 
+                text="✕", 
+                command=lambda i=idx: self.sterge_material(i), 
+                fg_color="#cf1b1b", 
+                hover_color="#a50000", 
+                text_color="white", 
+                width=30,
+                corner_radius=5
+            )
+            btn_delete.pack(side="right", padx=5, pady=2)
+    def sterge_material(self, index):
+        """Sterge un material din lista dupa index si actualizeaza interfata."""
+        if 0 <= index < len(self.materiale):
+            self.materiale.pop(index)  # Sterge materialul din lista
+            self.label_materiale.configure(text=f"Materiale adaugate: {len(self.materiale)}")
+            self.actualizeaza_lista_materiale()  # Actualizeaza lista afisata
+        
 
 
     def previzualizare(self):
@@ -110,6 +148,7 @@ class EmailApp:
         messagebox.showinfo("Previzualizare", f"Subiect: {subiect}\n\nDestinatar: {destinatar}\n\nMesaj:\n{corp_mesaj}")
     
     def reset_fields(self):
+        """Reseteaza toate campurile si lista de materiale."""
         # Sterge textul din campurile de intrare
         self.entry_subiect.delete(0, 'end')
         self.entry_licitatie.delete(0, 'end')
@@ -120,13 +159,21 @@ class EmailApp:
         self.entry_subiect.insert(0, "Cerere oferta")
 
         # Goleste lista de materiale
-        self.materiale.clear()
+        self.materiale = []
 
-        # Actualizeaza label-ul pentru materialele adaugate
-        self.label_materiale.configure(text=f"Materiale adaugate: {len(self.materiale)}")
+        # Sterge toate widget-urile din frame-ul listei de materiale
+        for widget in self.frame_lista_materiale.winfo_children():
+            widget.destroy()
+
+        # Reseteaza label-ul pentru materialele adaugate
+        self.label_materiale.configure(text="Materiale adaugate: 0")
+
+        # Seteaza din nou height-ul frame-ului la 0
+        self.frame_lista_materiale.configure(height=0)
 
         # Afiseaza un mesaj de confirmare
         messagebox.showinfo("Reset", "Toate campurile au fost resetate!")
+
 
 
     def trimite_email(self):
