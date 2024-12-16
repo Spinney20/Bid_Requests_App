@@ -10,7 +10,7 @@ class EmailApp:
 
         self.root = root
         self.root.title("Cerere de Oferta - Personalizat")
-        self.root.geometry("600x600")
+        self.root.geometry("700x500")
         self.root.resizable(True, True)  # Permite redimensionarea
 
         # Adaugare logo
@@ -59,22 +59,29 @@ class EmailApp:
 
         ctk.CTkButton(frame_buttons, text="Previzualizare", command=self.previzualizare, fg_color="#0073cf", hover_color="#005bb5", text_color="white", corner_radius=15, width=200).grid(row=0, column=0, padx=10, pady=10)  # Albastru
         ctk.CTkButton(frame_buttons, text="Trimite Email", command=self.trimite_email, fg_color="#cf1b1b", hover_color="#a50000", text_color="white", corner_radius=15, width=200).grid(row=0, column=1, padx=10, pady=10)  # Rosu
-
+        # Buton Reset
+        ctk.CTkButton(frame_buttons, text="Reset", command=self.reset_fields, 
+              fg_color="#808080", hover_color="#606060", text_color="white", 
+              corner_radius=15, width=200).grid(row=0, column=2, padx=10, pady=10)
         # Lista materiale
         self.materiale = []
 
     def adauga_material(self):
         # Pop-up pentru introducerea numelui materialului
         material = simpledialog.askstring("Material", "Introduceti materialul:", parent=self.root)
-
         if material:
+            # Fortam focusul pe acest popup
+            self.root.update()  # Actualizam fereastra
+            self.root.focus_force()
+
             # Pop-up pentru introducerea cantitatii
             cantitate = simpledialog.askstring("Cantitate", f"Introduceti cantitatea pentru {material}:", parent=self.root)
-
             if cantitate:
+                self.root.update()
+                self.root.focus_force()
+
                 # Pop-up pentru introducerea unitatii de masura
                 unitate = simpledialog.askstring("Unitate de masura", f"Introduceti unitatea de masura pentru {material}:", parent=self.root)
-
                 if unitate:
                     # Adaug materialul in lista daca toate campurile sunt completate
                     self.materiale.append({'material': material, 'cantitate': cantitate, 'unitate_de_masura': unitate})
@@ -83,6 +90,7 @@ class EmailApp:
                     messagebox.showwarning("Eroare", "Unitatea de masura este necesara!", parent=self.root)
             else:
                 messagebox.showwarning("Eroare", "Cantitatea este necesara!", parent=self.root)
+
 
 
 
@@ -100,6 +108,26 @@ class EmailApp:
         corp_mesaj = generare_mesaj(materiale_dict, nume_licitatie, numar_cn)
 
         messagebox.showinfo("Previzualizare", f"Subiect: {subiect}\n\nDestinatar: {destinatar}\n\nMesaj:\n{corp_mesaj}")
+    
+    def reset_fields(self):
+        # Sterge textul din campurile de intrare
+        self.entry_subiect.delete(0, 'end')
+        self.entry_licitatie.delete(0, 'end')
+        self.entry_cn.delete(0, 'end')
+        self.entry_destinatar.delete(0, 'end')
+
+        # Reintroduce valoarea default pentru subiect
+        self.entry_subiect.insert(0, "Cerere oferta")
+
+        # Goleste lista de materiale
+        self.materiale.clear()
+
+        # Actualizeaza label-ul pentru materialele adaugate
+        self.label_materiale.configure(text=f"Materiale adaugate: {len(self.materiale)}")
+
+        # Afiseaza un mesaj de confirmare
+        messagebox.showinfo("Reset", "Toate campurile au fost resetate!")
+
 
     def trimite_email(self):
         nume_licitatie = self.entry_licitatie.get()
