@@ -39,11 +39,10 @@ def generare_mesaj(materiale, nume_licitatie, numar_cn, documente=None, link_tra
     corp_mesaj += "\nCu stima,\nViarom Construct"
     return corp_mesaj
 
-
-
-def trimite_email(destinatar, subiect, corp_mesaj, documente=None):
+def trimite_email(destinatar, subiect, corp_mesaj, documente=None, html=False):
     """
     Trimite email folosind serverul SMTP Outlook, cu posibilitatea de a adauga atasamente.
+    Daca html=True, trimite corp_mesaj ca HTML.
     """
     email_sender = 'andrei.dobre@viarom.ro'  # adresa mail
     email_password = 'Stilpeni2023!'  # parola
@@ -55,7 +54,12 @@ def trimite_email(destinatar, subiect, corp_mesaj, documente=None):
     mesaj['From'] = email_sender
     mesaj['To'] = destinatar
     mesaj['Subject'] = subiect
-    mesaj.attach(MIMEText(corp_mesaj, 'plain'))
+
+    # In functie de html, atasam ca 'html' sau 'plain'
+    if html:
+        mesaj.attach(MIMEText(corp_mesaj, 'html'))
+    else:
+        mesaj.attach(MIMEText(corp_mesaj, 'plain'))
 
     # Adaugare documente atasate
     if documente:
@@ -87,17 +91,15 @@ def trimite_email(destinatar, subiect, corp_mesaj, documente=None):
         print(f"Eroare la trimiterea e-mailului: {e}")
 
 if __name__ == '__main__':
-    # Solicitare subiect e-mail
+    # (Codul de test CLI - neschimbat)
     subiect = input("Introduceți subiectul e-mailului (default: Cerere ofertă): ")
-    if not subiect.strip():  # daca apasam enter, folosim subiectul default care este : 
+    if not subiect.strip():
         subiect = "Cerere ofertă"
 
-    # info licitatie
     print("\nIntroduceți informațiile despre licitație:")
     nume_licitatie = input("Numele licitației: ")
     numar_cn = input("Numărul CN al licitației: ")
 
-    # Introducerea materialelor ( + cantiate + u.m. pt fiecare material )
     print("\nIntroduceți materialele necesare (tastați 'stop' pentru a finaliza):")
     materiale = {}
     while True:
@@ -108,20 +110,16 @@ if __name__ == '__main__':
         unitate_de_masura = input(f"Unitate de măsură pentru {material} (ex: buc, m, kg): ")
         materiale[material] = {'cantitate': cantitate, 'unitate_de_masura': unitate_de_masura}
     
-    # Generare corp email
     corp_mesaj = generare_mesaj(materiale, nume_licitatie, numar_cn)
     
-    # Adresa de email destinatar
     destinatar = input("\nIntroduceți adresa de e-mail a destinatarului: ")
 
-    # previzualizare e-mail
     print("\n--- Previzualizare e-mail ---")
     print(f"Subiect: {subiect}")
     print(f"Destinatar: {destinatar}")
     print("Mesaj:")
     print(corp_mesaj)
 
-    # Confirmare inainte de trimitere
     confirmare = input("\nDoriți să trimiteți acest e-mail? (da/nu): ").strip().lower()
     if confirmare == 'da':
         trimite_email(destinatar, subiect, corp_mesaj)
