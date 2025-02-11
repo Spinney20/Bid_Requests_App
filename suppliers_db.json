@@ -1,0 +1,18 @@
+{
+  "categories": [
+    "Pavaje & Borduri",
+    "Agregate"
+  ],
+  "suppliers": {
+    "Pavaje & Borduri": [
+      {
+        "nume": "Elis Pavaje",
+        "emails": [
+          "mariusgrecu@elis.ro"
+        ],
+        "telefoane": []
+      }
+    ],
+    "Agregate": []
+  }
+}
