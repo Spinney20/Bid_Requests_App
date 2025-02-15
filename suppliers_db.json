@@ -1,7 +1,21 @@
 {
   "categories": [
     "Pavaje & Borduri",
-    "Agregate"
+    "Agregate",
+    "Parapeti",
+    "Prefabricate",
+    "Separatoare Hidrocarburi",
+    "Geotextile",
+    "Masticuri",
+    "Marcaje",
+    "Indicatoare",
+    "PVC",
+    "Vopsea marcaje",
+    "Canalizare",
+    "Insule Sensuri",
+    "PAFSIN",
+    "Mortare",
+    "Panouri fonoabsorbante"
   ],
   "suppliers": {
     "Pavaje & Borduri": [
@@ -10,9 +24,392 @@
         "emails": [
           "mariusgrecu@elis.ro"
         ],
+        "telefoane": [
+          "0749 025 385"
+        ]
+      },
+      {
+        "nume": "Symmetrica",
+        "emails": [
+          "vanzari@symmetrica.ro"
+        ],
+        "telefoane": [
+          "0751 515 001"
+        ]
+      }
+    ],
+    "Agregate": [
+      {
+        "nume": "SC Pyramid Agregate Company SRL",
+        "emails": [
+          "sebienachescu@gmail.com"
+        ],
+        "telefoane": [
+          "0726 314 130"
+        ]
+      },
+      {
+        "nume": "Abexploagregate (Badymax)",
+        "emails": [
+          "abexploagregate@yahoo.com"
+        ],
+        "telefoane": [
+          "0729 842 236"
+        ]
+      },
+      {
+        "nume": "TGM - Group",
+        "emails": [
+          "mt@tgm-group.ro"
+        ],
+        "telefoane": []
+      },
+      {
+        "nume": "LCA Lions Trans SRL",
+        "emails": [
+          "laurcaba@yahoo.com"
+        ],
+        "telefoane": [
+          "0728 785 385"
+        ]
+      },
+      {
+        "nume": "Port Trans",
+        "emails": [
+          "office@port-trans.ro"
+        ],
+        "telefoane": [
+          "0760 677 888"
+        ]
+      },
+      {
+        "nume": "Luscan",
+        "emails": [
+          "andreea.nicolaescu@luscancom.ro"
+        ],
+        "telefoane": [
+          "0754 477 145"
+        ]
+      }
+    ],
+    "Parapeti": [
+      {
+        "nume": "Parapeti Roger SRL",
+        "emails": [
+          "contact@parapetroger.ro"
+        ],
+        "telefoane": [
+          "0728 205 305"
+        ]
+      },
+      {
+        "nume": "Saferoad RRS",
+        "emails": [
+          "marius.toader@saferoad-rrs.com"
+        ],
+        "telefoane": [
+          "0723 386 892"
+        ]
+      }
+    ],
+    "Prefabricate": [
+      {
+        "nume": "Macofil SA",
+        "emails": [
+          "vanzari@macofilsa.ro"
+        ],
+        "telefoane": [
+          "0749 228 689"
+        ]
+      },
+      {
+        "nume": "SW Umwelttechnik",
+        "emails": [
+          "Dorin.Anghel@sw-umwelttechnik.ro"
+        ],
+        "telefoane": [
+          "0739 677 138"
+        ]
+      },
+      {
+        "nume": "Prefab SA",
+        "emails": [
+          "marketing@prefab.ro"
+        ],
+        "telefoane": [
+          "0727 500 194"
+        ]
+      }
+    ],
+    "Separatoare Hidrocarburi": [
+      {
+        "nume": "Viacon",
+        "emails": [
+          "cristina.puscasu@viacon.ro"
+        ],
+        "telefoane": [
+          "0747 296 032"
+        ]
+      },
+      {
+        "nume": "Cribernet",
+        "emails": [
+          "anamaria.prian@cribernet.ro"
+        ],
+        "telefoane": [
+          "0745 526 938"
+        ]
+      }
+    ],
+    "Geotextile": [
+      {
+        "nume": "Novatex",
+        "emails": [
+          "bucuresti@novatex.ro"
+        ],
+        "telefoane": [
+          "0727 830 115"
+        ]
+      },
+      {
+        "nume": "Inoveco",
+        "emails": [
+          "alexandra.ieremie@inovecoexpert.ro"
+        ],
+        "telefoane": [
+          "021 241 55 13"
+        ]
+      }
+    ],
+    "Masticuri": [
+      {
+        "nume": "Systematic",
+        "emails": [
+          "adina@systematic.ro"
+        ],
+        "telefoane": [
+          "0727 120 016"
+        ]
+      },
+      {
+        "nume": "Dito Group",
+        "emails": [
+          "sales@dito-group.ro"
+        ],
         "telefoane": []
       }
     ],
-    "Agregate": []
+    "Marcaje": [
+      {
+        "nume": "Anduna",
+        "emails": [
+          "mihai.tarasenie@anduna.ro"
+        ],
+        "telefoane": [
+          "021 411 99 71"
+        ]
+      },
+      {
+        "nume": "Vesta",
+        "emails": [
+          "aplicare@vesta.ro"
+        ],
+        "telefoane": [
+          "021 351 09 75"
+        ]
+      },
+      {
+        "nume": "Girod",
+        "emails": [
+          "raul.costea@girod.ro"
+        ],
+        "telefoane": [
+          "0790 302 633"
+        ]
+      },
+      {
+        "nume": "Gamida",
+        "emails": [
+          "office@gamida.ro"
+        ],
+        "telefoane": [
+          "0788 596 934"
+        ]
+      },
+      {
+        "nume": "Loial",
+        "emails": [
+          "vasile.muntean@loial.ro"
+        ],
+        "telefoane": [
+          "0722 220 643"
+        ]
+      }
+    ],
+    "Indicatoare": [
+      {
+        "nume": "Loial",
+        "emails": [
+          "vasile.muntean@loial.ro"
+        ],
+        "telefoane": [
+          "0722 220 643"
+        ]
+      },
+      {
+        "nume": "Girod",
+        "emails": [
+          "raul.costea@girod.ro"
+        ],
+        "telefoane": [
+          "0790 302 633"
+        ]
+      }
+    ],
+    "PVC": [
+      {
+        "nume": "Sami Plastic SA",
+        "emails": [
+          "comercial_h@samiplastic.ro"
+        ],
+        "telefoane": []
+      },
+      {
+        "nume": "TeraPlast",
+        "emails": [
+          "ofertare.trp@teraplast.ro"
+        ],
+        "telefoane": [
+          "0752101591"
+        ]
+      },
+      {
+        "nume": "Tehnoworld",
+        "emails": [
+          "licitatii@tehnoworld.ro"
+        ],
+        "telefoane": []
+      },
+      {
+        "nume": "Tubimax",
+        "emails": [
+          "vanzari@tubimax.ro"
+        ],
+        "telefoane": [
+          "0757 129 561"
+        ]
+      }
+    ],
+    "Vopsea marcaje": [
+      {
+        "nume": "Swarco",
+        "emails": [
+          "laurentiu.gherase@swarco.com"
+        ],
+        "telefoane": [
+          "0755 010 716"
+        ]
+      }
+    ],
+    "Canalizare": [
+      {
+        "nume": "Valrom",
+        "emails": [
+          "viorel.radu@valrom.ro"
+        ],
+        "telefoane": [
+          "021 317 38 00"
+        ]
+      },
+      {
+        "nume": "SW Umwelttechnik",
+        "emails": [
+          "Dorin.Anghel@sw-umwelttechnik.ro"
+        ],
+        "telefoane": [
+          "0739 677 138"
+        ]
+      },
+      {
+        "nume": "TeraPlast",
+        "emails": [
+          "ofertare.trp@teraplast.ro"
+        ],
+        "telefoane": [
+          "0752101591"
+        ]
+      }
+    ],
+    "Insule Sensuri": [
+      {
+        "nume": "Arva Craiova",
+        "emails": [
+          "arva.craiova@yahoo.com"
+        ],
+        "telefoane": [
+          "0755 113 732"
+        ]
+      }
+    ],
+    "PAFSIN": [
+      {
+        "nume": "Rorex",
+        "emails": [
+          "rnicolae@rorexpipe.com"
+        ],
+        "telefoane": [
+          "0723 700 710"
+        ]
+      }
+    ],
+    "Mortare": [
+      {
+        "nume": "Mapei",
+        "emails": [
+          "roxana.micu@mapei.ro"
+        ],
+        "telefoane": [
+          "0729 942 370"
+        ]
+      },
+      {
+        "nume": "Sika",
+        "emails": [
+          "gavrilov.mihail@ro.sika.com"
+        ],
+        "telefoane": [
+          "0733 553 384"
+        ]
+      },
+      {
+        "nume": "Agnel Industry",
+        "emails": [
+          "agnel.industry.iasi@gmail.com"
+        ],
+        "telefoane": [
+          "0750 430 559"
+        ]
+      },
+      {
+        "nume": "Isomat",
+        "emails": [
+          "raluca.petcu@isomat.ro"
+        ],
+        "telefoane": [
+          "0745 269 365"
+        ]
+      }
+    ],
+    "Panouri fonoabsorbante": [
+      {
+        "nume": "Hericon",
+        "emails": [
+          "office@hericon.ro"
+        ],
+        "telefoane": [
+          "0770 422 920"
+        ]
+      }
+    ]
   }
 }

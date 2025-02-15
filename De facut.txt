@@ -1,0 +1,3 @@
+- Gestionare furnizori mai complexa -> sa permita mai multe pers de contact
+- Daca am mai multe mail uri sa fie date ca input la update, nu sa fie tinute cu virgula manuala de la mine
+- daca am multi furnizori in gestionare furnizori sa dau mai jos cu scroll ca sa ii vad nu sa trag de limitele aplicatiei

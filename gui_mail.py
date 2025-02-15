@@ -5,6 +5,8 @@ from PIL import Image
 from mail import generare_mesaj, trimite_email
 from suppliers_db import SuppliersDB  # Importam clasa BDD
 import os
+from preview_manager import PreviewManager
+from email_editor import EmailEditor
 
 class EmailApp:
     def __init__(self, root):
@@ -16,6 +18,10 @@ class EmailApp:
         self.root.geometry("700x700")
         self.root.resizable(True, True)
         self.root.iconbitmap("app_icon.ico")
+
+        # fisiere externe
+        self.preview_manager = PreviewManager(self)
+
 
         # ---------- Incarcam baza de date a furnizorilor ----------
         self.db = SuppliersDB("suppliers_db.json")
@@ -60,54 +66,105 @@ class EmailApp:
 
         # ---------- Materiale ----------
         frame_materiale_col = ctk.CTkFrame(frame_main, fg_color="#f0f0f0", corner_radius=15)
-        frame_materiale_col.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+        frame_materiale_col.grid(row=0, column=0, padx=0, pady=0, sticky="nsew")
 
-        ctk.CTkLabel(frame_materiale_col, text="Materiale", font=("Arial", 14, "bold"), text_color="#1f4e78").pack(pady=5)
-        ctk.CTkButton(frame_materiale_col, text="Adauga Material", command=self.adauga_material, fg_color="#1f4e78", text_color="white").pack(pady=5)
-        self.label_materiale = ctk.CTkLabel(frame_materiale_col, text="Materiale adaugate: 0", font=("Arial", 12), text_color="#1f4e78")
-        self.label_materiale.pack(pady=5)
+        # Titlu și buton
+        ctk.CTkLabel(frame_materiale_col, text="Materiale", font=("Arial", 14, "bold"), text_color="#1f4e78").pack(pady=(5, 0))  # Reducem pady-ul de jos
+        ctk.CTkButton(frame_materiale_col, text="Adauga Material", command=self.adauga_material, 
+                    fg_color="#1f4e78", text_color="white", height=28).pack(pady=(0, 5))  # Buton mai compact
+        self.label_materiale = ctk.CTkLabel(frame_materiale_col, text="Materiale adaugate: 0", 
+                                        font=("Arial", 12), text_color="#1f4e78")
+        self.label_materiale.pack(pady=0)
 
-        self.frame_lista_materiale = ctk.CTkFrame(frame_materiale_col, fg_color="transparent", height=0)
-        self.frame_lista_materiale.pack(pady=5, padx=5, fill="x")
+        # Frame-ul scrollable cu dimensiuni fixe
+        self.frame_lista_materiale = ctk.CTkScrollableFrame(
+            frame_materiale_col,
+            fg_color="transparent",
+            height=75,  # Înălțime fixă pentru EXACT 3 elemente (25px pe rând)
+            scrollbar_button_color="#f0f0f0",
+            scrollbar_button_hover_color="#e0e0e0"
+        )
+        self.frame_lista_materiale.pack(pady=0, padx=0, fill="x", expand=False)  # NU folosi fill="both"
+
+        # Forțează dimensiunile frame-ului părinte
+        frame_materiale_col.grid_propagate(False)
+        frame_materiale_col.configure(height=0)  # Înălțime totală a întregii coloane "Materiale"
 
         # ---------- Documente ----------
         frame_documente_col = ctk.CTkFrame(frame_main, fg_color="#f0f0f0", corner_radius=15)
-        frame_documente_col.grid(row=0, column=1, padx=10, pady=10, sticky="n")
+        frame_documente_col.grid(row=0, column=1, padx=10, pady=0, sticky="nsew")  # Ajustat padx
 
-        ctk.CTkLabel(frame_documente_col, text="Documente", font=("Arial", 14, "bold"), text_color="#1f4e78").pack(pady=5)
-        ctk.CTkButton(frame_documente_col, text="Adauga Document", command=self.adauga_document, fg_color="#1f4e78", text_color="white").pack(pady=5)
-        ctk.CTkButton(frame_documente_col, text="Adauga Link TransferNow", command=self.adauga_link_transfernow, fg_color="#1f4e78", text_color="white").pack(pady=5)
-        self.label_link_transfernow = ctk.CTkLabel(frame_documente_col, text="Link TransferNow: None", font=("Arial", 12), text_color="#1f4e78")
-        self.label_link_transfernow.pack(pady=5)
+        # Titlu
+        ctk.CTkLabel(frame_documente_col, text="Documente", font=("Arial", 14, "bold"), text_color="#1f4e78").pack(pady=(5, 0))
 
-        self.frame_lista_documente = ctk.CTkFrame(frame_documente_col, fg_color="transparent", height=0)
-        self.frame_lista_documente.pack(pady=5, padx=5, fill="x")
+        # Frame pentru butoane aliniate orizontal
+        frame_butoane_documente = ctk.CTkFrame(frame_documente_col, fg_color="transparent")
+        frame_butoane_documente.pack(pady=(0, 5), fill="x")
+
+        # Butoane pe același rând
+        ctk.CTkButton(frame_butoane_documente, text="Adauga Document", 
+                    command=self.adauga_document, 
+                    fg_color="#1f4e78", 
+                    text_color="white",
+                    height=28,
+                    width=140).pack(side="left", padx=(30, 5))
+
+        ctk.CTkButton(frame_butoane_documente, text="Link TransferNow", 
+                    command=self.adauga_link_transfernow,
+                    fg_color="#1f4e78",
+                    text_color="white",
+                    height=28,
+                    width=140).pack(side="right", padx=(5, 30))
+
+        # Label link transfernow
+        self.label_link_transfernow = ctk.CTkLabel(
+            frame_documente_col,
+            text="Link TransferNow: None",
+            font=("Arial", 12),
+            text_color="#1f4e78"
+        )
+        self.label_link_transfernow.pack(pady=(0, 5))
+
+        # Frame scrollable pentru documente
+        self.frame_lista_documente = ctk.CTkScrollableFrame(
+            frame_documente_col,
+            fg_color="transparent",
+            height=75,  # Înălțime fixă pentru 3 elemente
+            scrollbar_button_color="#f0f0f0",
+            scrollbar_button_hover_color="#e0e0e0"
+        )
+        self.frame_lista_documente.pack(pady=0, padx=0, fill="x", expand=False)
+
+        # Forțează dimensiuni fixe
+        frame_documente_col.grid_propagate(False)
+        frame_documente_col.configure(height=150)
 
         # ---------- Butoane de jos ----------
         frame_buttons = ctk.CTkFrame(root, corner_radius=15, fg_color="#f0f0f0")
         frame_buttons.pack(pady=20, padx=20, fill="x")
 
-        ctk.CTkButton(frame_buttons, text="Previzualizare", command=self.previzualizare,
-                      fg_color="#0073cf", hover_color="#005bb5",
-                      text_color="white", corner_radius=15, width=200).grid(row=0, column=0, padx=10, pady=10)
+        ctk.CTkButton(frame_buttons, text="Previzualizare", command=self.preview_manager.previzualizare,
+              fg_color="#0073cf", hover_color="#005bb5",
+              text_color="white", corner_radius=15, width=200).grid(row=1, column=0, padx=10, pady=10)
 
         ctk.CTkButton(frame_buttons, text="Trimite Email", command=self.trimite_email,
-                      fg_color="#cf1b1b", hover_color="#a50000",
+                      fg_color="#2f7e1b", hover_color="#286214",
                       text_color="white", corner_radius=15, width=200).grid(row=0, column=1, padx=10, pady=10)
 
         ctk.CTkButton(frame_buttons, text="Reset", command=self.reset_fields,
-                      fg_color="#808080", hover_color="#606060", text_color="white", 
-                      corner_radius=15, width=200).grid(row=0, column=2, padx=10, pady=10)
+                      fg_color="#cf1b1b", hover_color="#a50000", text_color="white", 
+                      corner_radius=15, width=200).grid(row=1, column=1, padx=10, pady=10)
 
         # ---------- Buton GESTIONARE FURNIZORI ----------
         ctk.CTkButton(frame_buttons, text="Gestionare Furnizori", command=self.open_furnizori_manager,
-                      fg_color="#2f7e1b", hover_color="#286214", text_color="white",
-                      corner_radius=15, width=200).grid(row=0, column=3, padx=10, pady=10)
+                      fg_color="#808080", hover_color="#606060", text_color="white",
+                      corner_radius=15, width=200).grid(row=1, column=2, padx=10, pady=10)
 
         # ---------- Liste ----------
         self.materiale = []
         self.documente = []
         self.link_transfernow = ""
+
 
     # -------------------------------------------------------------------------
     # Partea de MATERIALE
@@ -151,30 +208,6 @@ class EmailApp:
             self.materiale.pop(index)
             self.label_materiale.configure(text=f"Materiale adaugate: {len(self.materiale)}")
             self.actualizeaza_lista_materiale()
-
-    # -------------------------------------------------------------------------
-    # Partea de PREVIZUALIZARE
-    # -------------------------------------------------------------------------
-    def previzualizare(self):
-        nume_licitatie = self.entry_licitatie.get()
-        numar_cn = self.entry_cn.get()
-        subiect = self.entry_subiect.get()
-        destinatar = self.entry_destinatar.get()
-
-        if not nume_licitatie or not numar_cn or not destinatar:
-            messagebox.showwarning("Eroare", "Toate campurile sunt obligatorii!")
-            return
-
-        materiale_dict = {
-            m['material']: {
-                'cantitate': m['cantitate'],
-                'unitate_de_masura': m['unitate_de_masura']
-            } for m in self.materiale
-        }
-        corp_mesaj = generare_mesaj(materiale_dict, nume_licitatie, numar_cn, self.documente, self.link_transfernow)
-
-        messagebox.showinfo("Previzualizare", 
-            f"Subiect: {subiect}\n\nDestinatar: {destinatar}\n\nMesaj:\n{corp_mesaj}")
 
     def reset_fields(self):
         self.entry_subiect.delete(0, 'end')
@@ -239,7 +272,7 @@ class EmailApp:
             self.label_link_transfernow.configure(text=f"Link TransferNow: {link}")
 
     # -------------------------------------------------------------------------
-    # Partea de TRIMITERE EMAIL (mini-editor)
+    # Partea de TRIMITERE EMAIL + mini-editor -> EmailEditor
     # -------------------------------------------------------------------------
     def trimite_email(self):
         nume_licitatie = self.entry_licitatie.get()
@@ -259,221 +292,9 @@ class EmailApp:
             for m in self.materiale
         }
         corp_mesaj_initial = generare_mesaj(materiale_dict, nume_licitatie, numar_cn, self.documente, self.link_transfernow)
-
-        preview_window = ctk.CTkToplevel(self.root)
-        preview_window.title("Mini-editor & Previzualizare Email")
-        preview_window.geometry("800x600")
-        preview_window.grab_set()
-
-        toolbar_frame = ctk.CTkFrame(preview_window, fg_color="#d0d0d0")
-        toolbar_frame.pack(side="top", fill="x", pady=5)
-
-        text_editor_frame = ctk.CTkFrame(preview_window, fg_color="white")
-        text_editor_frame.pack(fill="both", expand=True, padx=10, pady=10)
-
-        scrollbar = tkinter.Scrollbar(text_editor_frame, orient="vertical")
-        scrollbar.pack(side="right", fill="y")
-
-        self.text_editor = tkinter.Text(
-            text_editor_frame,
-            wrap="word",
-            font=("Arial", 12),
-            undo=True,
-            yscrollcommand=scrollbar.set
-        )
-        self.text_editor.pack(side="left", fill="both", expand=True)
-        scrollbar.config(command=self.text_editor.yview)
-
-        self.text_editor.insert("1.0", corp_mesaj_initial)
-
-        btn_bold = ctk.CTkButton(toolbar_frame, text="B", width=40, fg_color="#333333", text_color="white",
-                                 command=lambda: self.toggle_style("bold"))
-        btn_bold.pack(side="left", padx=5)
-
-        btn_italic = ctk.CTkButton(toolbar_frame, text="I", width=40, fg_color="#333333", text_color="white",
-                                   command=lambda: self.toggle_style("italic"))
-        btn_italic.pack(side="left", padx=5)
-
-        btn_underline = ctk.CTkButton(toolbar_frame, text="U", width=40, fg_color="#333333", text_color="white",
-                                      command=lambda: self.toggle_style("underline"))
-        btn_underline.pack(side="left", padx=5)
-
-        font_families = ["Arial", "Calibri", "Times New Roman", "Helvetica", "Courier"]
-        self.selected_font = ctk.StringVar(value=font_families[0])
-        font_combo = ctk.CTkComboBox(toolbar_frame, values=font_families,
-                                     command=lambda e: self.apply_font_family(),
-                                     variable=self.selected_font)
-        font_combo.pack(side="left", padx=10)
-
-        font_sizes = ["10", "12", "14", "16", "18", "20", "24", "28"]
-        self.selected_size = ctk.StringVar(value="12")
-        size_combo = ctk.CTkComboBox(toolbar_frame, values=font_sizes,
-                                     command=lambda e: self.apply_font_family(size=True),
-                                     variable=self.selected_size)
-        size_combo.pack(side="left", padx=10)
-
-        btn_send = ctk.CTkButton(preview_window, text="Trimite",
-                                 command=lambda: self.send_from_editor(destinatar, subiect))
-        btn_send.pack(side="left", padx=20, pady=10)
-
-        def cancel_preview():
-            preview_window.destroy()
-
-        btn_cancel = ctk.CTkButton(preview_window, text="Renunta", command=cancel_preview)
-        btn_cancel.pack(side="right", padx=20, pady=10)
-
-    # ---- Funcții de styling text selectat ----
-    def toggle_style(self, style_word):
-        start, end = self._get_selection()
-        if not start:
-            return
-        fam, size, styles = self._get_current_font_info(start)
-        if style_word in styles:
-            styles.remove(style_word)
-        else:
-            styles.add(style_word)
-        self._apply_combined_tag(start, end, fam, size, styles)
-
-    def apply_font_family(self, size=False):
-        start, end = self._get_selection()
-        if not start:
-            return
-        fam, sz, styles = self._get_current_font_info(start)
-        if size:
-            newsize = self.selected_size.get()
-            self._apply_combined_tag(start, end, fam, newsize, styles)
-        else:
-            newfam = self.selected_font.get()
-            self._apply_combined_tag(start, end, newfam, sz, styles)
-
-    def _get_selection(self):
-        try:
-            start = self.text_editor.index("sel.first")
-            end   = self.text_editor.index("sel.last")
-            return (start, end)
-        except:
-            return (None, None)
-
-    def _get_current_font_info(self, index):
-        tags_here = self.text_editor.tag_names(index)
-        family = "Arial"
-        size   = "12"
-        styles = set()
-        for t in tags_here:
-            if t.startswith("font_"):
-                parts = t.split("_")
-                if len(parts) >= 3:
-                    family = parts[1]
-                    size   = parts[2]
-                for extra in parts[3:]:
-                    styles.add(extra)
-        return (family, size, styles)
-
-    def _apply_combined_tag(self, start, end, family, size, styles):
-        tag_name = f"font_{family}_{size}"
-        if styles:
-            tag_name += "_" + "_".join(styles)
-        style_str = " ".join(list(styles))
-
-        if style_str:
-            f = (family, int(size), style_str)
-        else:
-            f = (family, int(size))
-
-        self.text_editor.tag_configure(tag_name, font=f)
-        all_tags = self.text_editor.tag_names()
-        font_tags = [xx for xx in all_tags if xx.startswith("font_")]
-        for ft in font_tags:
-            self.text_editor.tag_remove(ft, start, end)
-        self.text_editor.tag_add(tag_name, start, end)
-
-    def send_from_editor(self, destinatar, subiect):
-        corp_html = self.convert_text_to_html(self.text_editor)
-        try:
-            trimite_email(destinatar, subiect, corp_html, self.documente, html=True)
-            messagebox.showinfo("Succes", "E-mail trimis cu succes!")
-            self.text_editor.master.destroy()
-        except Exception as e:
-            messagebox.showerror("Eroare", f"Eroare la trimiterea e-mailului: {e}")
-
-    def convert_text_to_html(self, text_widget):
-        end_index = text_widget.index("end-1c")
-        html_output = ""
-        current_tags = set()
-
-        def close_all_tags(tags):
-            closing = ""
-            if "font_" in " ".join(tags):
-                closing += "</span>"
-            if "underline" in tags:
-                closing += "</u>"
-            if "italic" in tags:
-                closing += "</i>"
-            if "bold" in tags:
-                closing += "</b>"
-            return closing
-
-        def open_tags(tags):
-            opening = ""
-            if "bold" in tags:
-                opening += "<b>"
-            if "italic" in tags:
-                opening += "<i>"
-            if "underline" in tags:
-                opening += "<u>"
-            font_tags = [t for t in tags if t.startswith("font_")]
-            if font_tags:
-                ftag = font_tags[-1]
-                parts = ftag.split("_", 2)
-                if len(parts) == 3:
-                    subparts = parts[2].split("_")
-                    font_family = parts[1]
-                    font_size   = subparts[0]
-                    opening += f'<span style="font-family:{font_family}; font-size:{font_size}px;">'
-                else:
-                    opening += "<span>"
-            return opening
-
-        idx = text_widget.index("1.0")
-        while True:
-            if idx == end_index:
-                if current_tags:
-                    html_output += close_all_tags(current_tags)
-                break
-
-            c = text_widget.get(idx)
-            tags_here = set(text_widget.tag_names(idx))
-
-            if tags_here != current_tags:
-                if current_tags:
-                    html_output += close_all_tags(current_tags)
-                if tags_here:
-                    html_output += open_tags(tags_here)
-                current_tags = tags_here
-
-            if c == "&":
-                html_output += "&amp;"
-            elif c == "<":
-                html_output += "&lt;"
-            elif c == ">":
-                html_output += "&gt;"
-            elif c == "\n":
-                html_output += "<br>"
-            else:
-                html_output += c
-
-            idx = text_widget.index(f"{idx}+1c")
-
-        final_html = f"""<html>
-<head>
-<meta charset="utf-8"/>
-</head>
-<body>
-{html_output}
-</body>
-</html>"""
-        return final_html
-
+        
+        EmailEditor(self.root, destinatar, subiect, corp_mesaj_initial, self.documente)
+        
     # -------------------------------------------------------------------------
     # GESTIONARE FURNIZORI (cu multiple email/telefon, update etc.)
     # -------------------------------------------------------------------------
@@ -719,15 +540,36 @@ class EmailApp:
                                    command=do_update)
         btn_update.pack(pady=10)
 
-    # -------------------------------------------------------------------------
-    # Pop-up universal
-    # -------------------------------------------------------------------------
     def pop_up_personalizat(self, titlu, mesaj, width=300):
         input_value = None
         dialog = tkinter.Toplevel(self.root)
+        dialog.withdraw()  # Ascundem pop-up-ul până setăm poziția corectă
         dialog.iconbitmap("app_icon.ico")
         dialog.title(titlu)
         dialog.geometry("400x200")
+
+        # Setăm dimensiunea corectă a pop-up-ului
+        popup_width = 400
+        popup_height = 200
+
+        # Ne asigurăm că fereastra principală (root) este actualizată
+        self.root.update_idletasks()
+
+        # Calculăm poziția exactă pentru centrare
+        root_x = self.root.winfo_rootx()
+        root_y = self.root.winfo_rooty()
+        root_width = self.root.winfo_width()
+        root_height = self.root.winfo_height()
+
+        pos_x = root_x + (root_width // 2) - (popup_width // 2)
+        pos_y = root_y + (root_height // 2) - (popup_height // 2)
+
+        # Aplicăm poziția corectă
+        dialog.geometry(f"{popup_width}x{popup_height}+{pos_x}+{pos_y}")
+
+        # Afișăm pop-up-ul doar după ce are poziția corectă
+        dialog.deiconify()
+
         dialog.grab_set()
 
         ctk.CTkLabel(dialog, text=mesaj, font=("Arial", 12)).pack(pady=10)
@@ -743,11 +585,15 @@ class EmailApp:
         def anuleaza():
             dialog.destroy()
 
+        # Bind ENTER pentru confirmare
+        dialog.bind("<Return>", lambda event: confirma())
+
         ctk.CTkButton(dialog, text="OK", command=confirma).pack(side="left", padx=20, pady=20)
         ctk.CTkButton(dialog, text="Cancel", command=anuleaza).pack(side="right", padx=20, pady=20)
 
         dialog.wait_window()
         return input_value
+
 
 
 # Ruleaza aplicatia
