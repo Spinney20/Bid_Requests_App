@@ -338,7 +338,7 @@ class EmailApp:
             self.afiseaza_documente()
 
     def adauga_link_transfernow(self):
-        link = simpledialog.askstring("Adauga Link TransferNow", "Introduceti link-ul TransferNow:", parent=self.root)
+        link = self.pop_up_personalizat("Link", "Adaugati link ul de transfer:", width = 200)
 
         if link:
             self.link_transfernow = link
@@ -712,11 +712,18 @@ class EmailApp:
         dialog.bind("<Return>", lambda event: confirma())
 
         ctk.CTkButton(dialog, text="OK", command=confirma).pack(side="left", padx=20, pady=20)
-        ctk.CTkButton(dialog, text="Cancel", command=anuleaza).pack(side="right", padx=20, pady=20)
+        ctk.CTkButton(
+                dialog, 
+                text="Cancel", 
+                command=anuleaza, 
+                fg_color="#cf1b1b",  # Roșu închis
+                hover_color="#a50000",  # Roșu mai intens la hover
+                text_color="white"  # Text alb pentru contrast
+            ).pack(side="right", padx=20, pady=20)
+
 
         dialog.wait_window()
         return input_value
-
 
 
 # Ruleaza aplicatia
