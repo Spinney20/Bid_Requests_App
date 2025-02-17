@@ -59,6 +59,11 @@ class EmailApp:
         self.entry_destinatar = ctk.CTkEntry(frame_details, width=500, border_color="#1f4e78")
         self.entry_destinatar.grid(row=3, column=1, padx=10, pady=5)
 
+        ctk.CTkLabel(frame_details, text="CC:", font=("Arial", 12), text_color="#1f4e78")\
+            .grid(row=4, column=0, sticky="w", padx=10, pady=5)
+        self.entry_cc = ctk.CTkEntry(frame_details, width=500, border_color="#1f4e78")
+        self.entry_cc.grid(row=4, column=1, padx=10, pady=5)
+
         # ---------- Frame principal ----------
         frame_main = ctk.CTkFrame(root, fg_color="transparent")
         frame_main.pack(padx=20, pady=5, fill="both", expand=True)
@@ -402,6 +407,7 @@ class EmailApp:
         numar_cn = self.entry_cn.get()
         subiect = self.entry_subiect.get()
         destinatar = self.entry_destinatar.get()
+        cc = self.entry_cc.get()
 
         if not nume_licitatie or not numar_cn or not destinatar:
             messagebox.showwarning("Eroare", "Toate campurile sunt obligatorii!")
@@ -416,7 +422,8 @@ class EmailApp:
         }
         corp_mesaj_initial = generare_mesaj(materiale_dict, nume_licitatie, numar_cn, self.documente, self.link_transfernow)
         
-        EmailEditor(self.root, destinatar, subiect, corp_mesaj_initial, self.documente)
+        # Transmiterea parametrului cc către EmailEditor
+        EmailEditor(self.root, destinatar, subiect, corp_mesaj_initial, self.documente, cc)
         
     # -------------------------------------------------------------------------
     # GESTIONARE FURNIZORI (cu multiple email/telefon, update etc.)

@@ -5,13 +5,14 @@ from tkinter import messagebox
 from mail import trimite_email
 
 class EmailEditor:
-    def __init__(self, root, destinatar, subiect, initial_message, documente):
+    def __init__(self, root, destinatar, subiect, initial_message, documente, cc=None):
         self.root = root
         self.destinatar = destinatar
         self.subiect = subiect
         self.initial_message = initial_message
         self.documente = documente
         self.create_editor()
+        self.cc = cc
 
     def create_editor(self):
         # Creează fereastra de previzualizare/mini-editor
@@ -76,7 +77,7 @@ class EmailEditor:
 
         # Butonul de trimitere
         btn_send = ctk.CTkButton(self.preview_window, text="Trimite",
-                                 command=lambda: self.send_from_editor(self.destinatar, self.subiect))
+                                 command=lambda: self.send_from_editor(self.destinatar, self.subiect, self.cc))
         btn_send.pack(side="left", padx=20, pady=10)
 
         # Buton pentru anulare
@@ -146,10 +147,10 @@ class EmailEditor:
             self.text_editor.tag_remove(ft, start, end)
         self.text_editor.tag_add(tag_name, start, end)
 
-    def send_from_editor(self, destinatar, subiect):
+    def send_from_editor(self, destinatar, subiect, cc):
         corp_html = self.convert_text_to_html(self.text_editor)
         try:
-            trimite_email(destinatar, subiect, corp_html, self.documente, html=True)
+            trimite_email(destinatar, subiect, corp_html, self.documente, html=True, cc = cc)
             messagebox.showinfo("Succes", "E-mail trimis cu succes!")
             # Închide fereastra mini-editorului
             self.text_editor.master.destroy()
