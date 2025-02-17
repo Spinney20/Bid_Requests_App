@@ -7,6 +7,7 @@ from suppliers_db import SuppliersDB  # Importam clasa BDD
 import os
 from preview_manager import PreviewManager
 from email_editor import EmailEditor
+import webbrowser
 
 class EmailApp:
     def __init__(self, root):
@@ -41,7 +42,7 @@ class EmailApp:
         frame_details = ctk.CTkFrame(root, corner_radius=15, fg_color="#f0f0f0")
         frame_details.pack(pady=5, padx=20, fill="x")
 
-        ctk.CTkLabel(frame_details, text="Subiect:", font=("Arial", 12), text_color="#1f4e78").grid(row=0, column=0, sticky="w", padx=10, pady=10)
+        ctk.CTkLabel(frame_details, text="Subiect:", font=("Arial", 12), text_color="#1f4e78").grid(row=0, column=0, sticky="w", padx=10, pady=5)
         self.entry_subiect = ctk.CTkEntry(frame_details, width=500, border_color="#1f4e78")
         self.entry_subiect.insert(0, "Cerere oferta")
         self.entry_subiect.grid(row=0, column=1, padx=10, pady=5)
@@ -280,17 +281,6 @@ class EmailApp:
         for widget in self.frame_lista_materiale.winfo_children():
             widget.destroy()        
 
-    def reset_documente(self):
-        # Resetare documente
-        self.documente_adaugate = []
-        
-        # Resetare link
-        self.label_link_transfernow.configure(text="Link TransferNow: None")
-        
-        # Curățare lista vizuală
-        for widget in self.frame_lista_documente.winfo_children():
-            widget.destroy()
-
     def reset_fields(self):
         self.entry_subiect.delete(0, 'end')
         self.entry_licitatie.delete(0, 'end')
@@ -349,9 +339,60 @@ class EmailApp:
 
     def adauga_link_transfernow(self):
         link = simpledialog.askstring("Adauga Link TransferNow", "Introduceti link-ul TransferNow:", parent=self.root)
+
         if link:
             self.link_transfernow = link
-            self.label_link_transfernow.configure(text=f"Link TransferNow: {link}")
+            self.label_link_transfernow.configure(
+                text="Link TransferNow: Click aici",
+                font=("Arial", 12, "bold", "underline"),  # Bold + subliniere când există link
+                text_color="#1f4e78",  # Culoare albastră standard pentru link
+                cursor="hand2"  # Cursor de link
+            )
+
+            # Elimină bindingurile anterioare pentru a evita dublurile
+            self.label_link_transfernow.unbind("<Button-1>")
+            self.label_link_transfernow.unbind("<Enter>")
+            self.label_link_transfernow.unbind("<Leave>")
+
+            # Adaugă interactivitate
+            self.label_link_transfernow.bind("<Button-1>", lambda e: webbrowser.open(link))  # Deschide link
+            self.label_link_transfernow.bind("<Enter>", lambda e: self.label_link_transfernow.configure(text_color="#ff6600"))  # Hover portocaliu
+            self.label_link_transfernow.bind("<Leave>", lambda e: self.label_link_transfernow.configure(text_color="#1f4e78"))  # Revine la albastru
+        else:
+            self.link_transfernow = ""  # Asigură că e gol dacă utilizatorul anulează dialogul
+            self.label_link_transfernow.configure(
+                text="Link TransferNow: None",
+                font=("Arial", 12),  # Revine la font normal
+                text_color="#1f4e78",
+                cursor="arrow"  # Cursor normal, fără mână
+            )
+
+            # Elimină orice binding pentru hover sau click
+            self.label_link_transfernow.unbind("<Button-1>")
+            self.label_link_transfernow.unbind("<Enter>")
+            self.label_link_transfernow.unbind("<Leave>")
+
+    def reset_documente(self):
+        # Resetare lista documente
+        self.documente_adaugate = []
+        self.link_transfernow = ""  # Resetare variabilă link
+
+        # Resetare etichetă Link TransferNow
+        self.label_link_transfernow.configure(
+            text="Link TransferNow: None",
+            font=("Arial", 12),  # Revenire la font normal (fără bold sau subliniere)
+            text_color="#1f4e78",  # Revenire la culoarea inițială
+            cursor="arrow"  # Revenire la cursor normal
+        )
+
+        # Elimină orice binding de hover sau click
+        self.label_link_transfernow.unbind("<Button-1>")
+        self.label_link_transfernow.unbind("<Enter>")
+        self.label_link_transfernow.unbind("<Leave>")
+
+        # Curățare lista vizuală de documente
+        for widget in self.frame_lista_documente.winfo_children():
+            widget.destroy()      
 
     # -------------------------------------------------------------------------
     # Partea de TRIMITERE EMAIL + mini-editor -> EmailEditor
