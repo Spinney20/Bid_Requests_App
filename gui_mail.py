@@ -8,6 +8,7 @@ import os
 from preview_manager import PreviewManager
 from email_editor import EmailEditor
 import webbrowser
+from email_chip import EmailChipContainer
 
 class EmailApp:
     def __init__(self, root):
@@ -39,30 +40,45 @@ class EmailApp:
         logo_label.pack()
 
         # ---------- Detalii generale ----------
+        # Configurare frame_details
         frame_details = ctk.CTkFrame(root, corner_radius=15, fg_color="#f0f0f0")
         frame_details.pack(pady=5, padx=20, fill="x")
 
-        ctk.CTkLabel(frame_details, text="Subiect:", font=("Arial", 12), text_color="#1f4e78").grid(row=0, column=0, sticky="w", padx=10, pady=5)
-        self.entry_subiect = ctk.CTkEntry(frame_details, width=500, border_color="#1f4e78")
+        # Configurăm coloanele pentru a se extinde uniform
+        frame_details.grid_columnconfigure(0, weight=0)  # Coloana cu etichete
+        frame_details.grid_columnconfigure(1, weight=1)  # Coloana cu câmpurile de input
+
+        # Subiect
+        ctk.CTkLabel(frame_details, text="Subiect:", font=("Arial", 12), text_color="#1f4e78")\
+            .grid(row=0, column=0, sticky="w", padx=10, pady=5)
+        self.entry_subiect = ctk.CTkEntry(frame_details, border_color="#1f4e78")
         self.entry_subiect.insert(0, "Cerere oferta")
-        self.entry_subiect.grid(row=0, column=1, padx=10, pady=5)
+        self.entry_subiect.grid(row=0, column=1, padx=10, pady=5, sticky="ew")
 
-        ctk.CTkLabel(frame_details, text="Numele Licitatiei:", font=("Arial", 12), text_color="#1f4e78").grid(row=1, column=0, sticky="w", padx=10, pady=5)
-        self.entry_licitatie = ctk.CTkEntry(frame_details, width=500, border_color="#1f4e78")
-        self.entry_licitatie.grid(row=1, column=1, padx=10, pady=5)
+        # Numele Licitației
+        ctk.CTkLabel(frame_details, text="Numele Licitației:", font=("Arial", 12), text_color="#1f4e78")\
+            .grid(row=1, column=0, sticky="w", padx=10, pady=5)
+        self.entry_licitatie = ctk.CTkEntry(frame_details, border_color="#1f4e78")
+        self.entry_licitatie.grid(row=1, column=1, padx=10, pady=5, sticky="ew")
 
-        ctk.CTkLabel(frame_details, text="Numarul CN:", font=("Arial", 12), text_color="#1f4e78").grid(row=2, column=0, sticky="w", padx=10, pady=5)
-        self.entry_cn = ctk.CTkEntry(frame_details, width=500, border_color="#1f4e78")
-        self.entry_cn.grid(row=2, column=1, padx=10, pady=5)
+        # Numărul CN
+        ctk.CTkLabel(frame_details, text="Numărul CN:", font=("Arial", 12), text_color="#1f4e78")\
+            .grid(row=2, column=0, sticky="w", padx=10, pady=5)
+        self.entry_cn = ctk.CTkEntry(frame_details, border_color="#1f4e78")
+        self.entry_cn.grid(row=2, column=1, padx=10, pady=5, sticky="ew")
 
-        ctk.CTkLabel(frame_details, text="Destinatar:", font=("Arial", 12), text_color="#1f4e78").grid(row=3, column=0, sticky="w", padx=10, pady=5)
-        self.entry_destinatar = ctk.CTkEntry(frame_details, width=500, border_color="#1f4e78")
-        self.entry_destinatar.grid(row=3, column=1, padx=10, pady=5)
+        # Destinatar – etichetă și container pentru "chips"
+        ctk.CTkLabel(frame_details, text="Destinatar:", font=("Arial", 12), text_color="#1f4e78")\
+            .grid(row=3, column=0, sticky="w", padx=10, pady=(5, 0))
+        self.destinatar_container = EmailChipContainer(frame_details, fg_color="transparent")
+        self.destinatar_container.grid(row=3, column=1, padx=10, pady=0, sticky="ew")
 
+        # CC – etichetă și container pentru "chips"
         ctk.CTkLabel(frame_details, text="CC:", font=("Arial", 12), text_color="#1f4e78")\
-            .grid(row=4, column=0, sticky="w", padx=10, pady=5)
-        self.entry_cc = ctk.CTkEntry(frame_details, width=500, border_color="#1f4e78")
-        self.entry_cc.grid(row=4, column=1, padx=10, pady=5)
+            .grid(row=4, column=0, sticky="w", padx=10, pady=(5, 0))
+        self.cc_container = EmailChipContainer(frame_details, fg_color="transparent")
+        self.cc_container.grid(row=4, column=1, padx=10, pady=0, sticky="ew")
+ 
 
         # ---------- Frame principal ----------
         frame_main = ctk.CTkFrame(root, fg_color="transparent")
@@ -406,10 +422,10 @@ class EmailApp:
         nume_licitatie = self.entry_licitatie.get()
         numar_cn = self.entry_cn.get()
         subiect = self.entry_subiect.get()
-        destinatar = self.entry_destinatar.get()
-        cc = self.entry_cc.get()
+        destinatari = self.destinatar_container.get_emails()  # Lista de destinatari
+        cc = self.cc_container.get_emails()  # Lista de CC-uri
 
-        if not nume_licitatie or not numar_cn or not destinatar:
+        if not nume_licitatie or not numar_cn or not destinatari:
             messagebox.showwarning("Eroare", "Toate campurile sunt obligatorii!")
             return
 
@@ -423,7 +439,7 @@ class EmailApp:
         corp_mesaj_initial = generare_mesaj(materiale_dict, nume_licitatie, numar_cn, self.documente, self.link_transfernow)
         
         # Transmiterea parametrului cc către EmailEditor
-        EmailEditor(self.root, destinatar, subiect, corp_mesaj_initial, self.documente, cc)
+        EmailEditor(self.root, destinatari, subiect, corp_mesaj_initial, self.documente, cc)
         
     # -------------------------------------------------------------------------
     # GESTIONARE FURNIZORI (cu multiple email/telefon, update etc.)
