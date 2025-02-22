@@ -24,29 +24,46 @@ class EmailChip(ctk.CTkFrame):
             self.remove_callback(self)
         self.destroy()
 
-
 class EmailChipContainer(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        self.configure(fg_color="transparent", corner_radius=5)  # Am scos padx și pady
+        self.email_chips = []
 
-        self.email_chips = []  # Lista adreselor de email active
+        # Setăm înălțimea fixă (34px este default pentru CTkEntry)
+        self.configure(
+            fg_color="white", 
+            corner_radius=7, 
+            border_width=2, 
+            border_color="#1f4e78",
+            height=28  # Înălțime fixă
+        )
+        self.pack_propagate(False)  # Blocăm redimensionarea automată
 
-        # Input pentru adăugare emailuri
-        self.entry = ctk.CTkEntry(self, width=300, border_color="#1f4e78")
-        self.entry.pack(side="left", padx=5, pady=5)  # Mutăm padx și pady aici
-        self.entry.bind("<Return>", self.add_email)  # Când apasă Enter, adaugă email
+        # Cadru intern pentru aliniere corectă
+        self.inner_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.inner_frame.pack(fill="both", padx=4, pady=2)
+
+        # Câmpul de introducere (fără bordură și cu înălțime redusă)
+        self.entry = ctk.CTkEntry(
+            self.inner_frame, 
+            border_width=0, 
+            fg_color="transparent",
+            height=28  # Asigură aliniere verticală
+        )
+        self.entry.pack(side="right", fill="x", expand=True, padx=0, pady=0)
+        self.entry.bind("<Return>", self.add_email)
 
     def add_email(self, event=None):
         email = self.entry.get().strip()
-        if email and email not in [chip.email for chip in self.email_chips]:  # Evită duplicatele
-            chip = EmailChip(self, email, remove_callback=self.remove_email)
-            chip.pack(side="left", padx=5, pady=5)  # Mutăm aici padx și pady
+        if email and email not in [chip.email for chip in self.email_chips]:
+            chip = EmailChip(self.inner_frame, email, self.remove_email)
+            chip.pack(side="left", padx=0, pady=0)  # Eliminăm padding-ul vertical
             self.email_chips.append(chip)
-            self.entry.delete(0, "end")  # Șterge textul după adăugare
+            self.entry.delete(0, "end")
 
     def remove_email(self, chip):
         self.email_chips.remove(chip)
+        chip.destroy()
 
     def get_emails(self):
-        return [chip.email for chip in self.email_chips]  # Returnează lista de emailuri
+        return [chip.email for chip in self.email_chips]
