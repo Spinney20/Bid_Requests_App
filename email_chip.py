@@ -10,11 +10,11 @@ class EmailChip(ctk.CTkFrame):
         self.configure(fg_color="#d0d0d0", corner_radius=10)  # Aici fără padx și pady
 
         # Label pentru afișarea emailului
-        self.label = ctk.CTkLabel(self, text=email, font=("Arial", 10), fg_color="#d0d0d0")
+        self.label = ctk.CTkLabel(self, text=email, font=("Arial", 9), fg_color="#d0d0d0")
         self.label.pack(side="left", padx=(5,2))
 
         # Buton mic de ștergere (X)
-        self.btn_remove = ctk.CTkButton(self, text="x", width=15, height=15, 
+        self.btn_remove = ctk.CTkButton(self, text="x", width=12, height=12, 
                                         font=("Arial", 8), fg_color="red", 
                                         corner_radius=7, command=self.remove)
         self.btn_remove.pack(side="right", padx=(0,5))
