@@ -1,14 +1,16 @@
 import customtkinter as ctk
 import tkinter
-from tkinter import simpledialog, messagebox, filedialog
+from tkinter import messagebox
 from PIL import Image
-from mail import generare_mesaj, trimite_email
-from suppliers_db import SuppliersDB  # Importam clasa BDD
-import os
+from mail import generare_mesaj
+from suppliers_db import SuppliersDB  # Importăm clasa BDD
 from preview_manager import PreviewManager
 from email_editor import EmailEditor
-import webbrowser
-from email_chip import EmailChipContainer, ScrollableEmailChipContainer
+from email_chip import ScrollableEmailChipContainer
+
+# Importăm secțiunile separate pentru materiale și documente
+from materiale_section import MaterialeSection
+from documente_section import DocumenteSection
 
 class EmailApp:
     def __init__(self, root):
@@ -21,11 +23,10 @@ class EmailApp:
         self.root.resizable(True, True)
         self.root.iconbitmap("app_icon.ico")
 
-        # fisiere externe
+        # Fisiere externe
         self.preview_manager = PreviewManager(self)
 
-
-        # ---------- Incarcam baza de date a furnizorilor ----------
+        # ---------- Încărcăm baza de date a furnizorilor ----------
         self.db = SuppliersDB("suppliers_db.json")
 
         # ---------- Logo ----------
@@ -40,13 +41,12 @@ class EmailApp:
         logo_label.pack()
 
         # ---------- Detalii generale ----------
-        # Configurare frame_details
         frame_details = ctk.CTkFrame(root, corner_radius=15, fg_color="#f0f0f0")
         frame_details.pack(pady=5, padx=20, fill="x")
 
         # Configurăm coloanele pentru a se extinde uniform
-        frame_details.grid_columnconfigure(0, weight=0)  # Coloana cu etichete
-        frame_details.grid_columnconfigure(1, weight=1)  # Coloana cu câmpurile de input
+        frame_details.grid_columnconfigure(0, weight=0)
+        frame_details.grid_columnconfigure(1, weight=1)
 
         # Subiect
         ctk.CTkLabel(frame_details, text="Subiect:", font=("Arial", 12), text_color="#1f4e78")\
@@ -78,57 +78,55 @@ class EmailApp:
         # CC – etichetă și container pentru "chips"
         ctk.CTkLabel(frame_details, text="CC:", font=("Arial", 12), text_color="#1f4e78")\
             .grid(row=4, column=0, sticky="w", padx=10, pady=(5, 0))
-        self.cc_container =  ScrollableEmailChipContainer(frame_details, fg_color="transparent", width=500)
+        self.cc_container = ScrollableEmailChipContainer(frame_details, fg_color="transparent", width=500)
         self.cc_container.grid(row=4, column=1, padx=10, pady=0, sticky="ew")
- 
 
         # ---------- Frame principal ----------
         frame_main = ctk.CTkFrame(root, fg_color="transparent")
         frame_main.pack(padx=20, pady=5, fill="both", expand=True)
-        frame_main.grid_columnconfigure(0, weight=1)
-        frame_main.grid_columnconfigure(1, weight=1)
+        # Atribuim o pondere mai mare pentru coloana Materiale
+        frame_main.grid_columnconfigure(0, weight=2)  # Materiale
+        frame_main.grid_columnconfigure(1, weight=1)  # Documente
 
-       # ---------- Materiale ----------
+        # ---------- Materiale ----------
         frame_materiale_col = ctk.CTkFrame(frame_main, fg_color="#f0f0f0", corner_radius=15)
         frame_materiale_col.grid(row=0, column=0, padx=0, pady=0, sticky="nsew")
 
-        # Rând pentru titlu și reset
-        title_reset_frame = ctk.CTkFrame(frame_materiale_col, fg_color="transparent")
-        title_reset_frame.pack(pady=(5, 0), fill="x", expand=True)
+        frame_materiale_col.configure(height=250, width=250)
+        frame_materiale_col.pack_propagate(False) 
 
-        # Titlu centrat ABSOLUT cu place()
+        title_reset_frame_mat = ctk.CTkFrame(frame_materiale_col, fg_color="transparent")
+        title_reset_frame_mat.pack(pady=(5, 0), fill="x", expand=True)
+
         lbl_title = ctk.CTkLabel(
-            title_reset_frame,
+            title_reset_frame_mat,
             text="Materiale",
             font=("Arial", 14, "bold"),
             text_color="#1f4e78"
         )
-        lbl_title.place(relx=0.5, rely=0.5, anchor="center")  # Centrare matematica exacta
+        lbl_title.place(relx=0.5, rely=0.5, anchor="center")
 
-        # Buton reset în dreapta
         self.btn_reset_materiale = ctk.CTkButton(
-            title_reset_frame,
+            title_reset_frame_mat,
             text="reset",
-            command=self.reset_materiale,
+            command=lambda: self.materiale_section.reset_materiale(),
             fg_color="#cf1b1b",
             hover_color="#a50000",
             text_color="white",
             width=20,
             height=20,
-            corner_radius= 14,
+            corner_radius=14,
             font=("Arial", 10)
         )
         self.btn_reset_materiale.pack(side="right", padx=5)
 
-        # Buton adăugare
         ctk.CTkButton(frame_materiale_col, 
-                    text="Adauga Material", 
-                    command=self.adauga_material,
-                    fg_color="#1f4e78", 
-                    text_color="white", 
-                    height=28).pack(pady=(0, 5), padx=5)
+                      text="Adauga Material", 
+                      command=lambda: self.materiale_section.adauga_material(),
+                      fg_color="#1f4e78", 
+                      text_color="white", 
+                      height=28).pack(pady=(0, 5), padx=5)
 
-        # Contor materiale
         label_reset_frame = ctk.CTkFrame(frame_materiale_col, fg_color="transparent")
         label_reset_frame.pack(pady=(0, 5), padx=5)
 
@@ -140,7 +138,6 @@ class EmailApp:
         )
         self.label_materiale.pack(side="left")
 
-        # Frame lista
         self.frame_lista_materiale = ctk.CTkScrollableFrame(
             frame_materiale_col,
             fg_color="transparent",
@@ -150,62 +147,52 @@ class EmailApp:
         )
         self.frame_lista_materiale.pack(pady=0, padx=5, fill="x", expand=False)
 
-        # Fixează dimensiunile
-        frame_materiale_col.grid_propagate(False)
-        frame_materiale_col.configure(width=200)  # Ajustează dimensiunea după nevoie
-
         # ---------- Documente ----------
         frame_documente_col = ctk.CTkFrame(frame_main, fg_color="#f0f0f0", corner_radius=15)
         frame_documente_col.grid(row=0, column=1, padx=10, pady=0, sticky="nsew")
 
-        # ---- Titlu + Reset ----
-        title_reset_frame = ctk.CTkFrame(frame_documente_col, fg_color="transparent")
-        title_reset_frame.pack(pady=(5, 0), fill="x", expand=True)
+        title_reset_frame_doc = ctk.CTkFrame(frame_documente_col, fg_color="transparent")
+        title_reset_frame_doc.pack(pady=(5, 0), fill="x", expand=True)
 
-        # Titlu centrat ABSOLUT ca la Materiale
         lbl_title_doc = ctk.CTkLabel(
-            title_reset_frame,
+            title_reset_frame_doc,
             text="Documente",
             font=("Arial", 14, "bold"),
             text_color="#1f4e78"
         )
-        lbl_title_doc.place(relx=0.5, rely=0.5, anchor="center")  # Identic cu Materiale
+        lbl_title_doc.place(relx=0.5, rely=0.5, anchor="center")
 
-        # Buton reset
         self.btn_reset_documente = ctk.CTkButton(
-            title_reset_frame,
+            title_reset_frame_doc,
             text="reset",
-            command=self.reset_documente,
+            command=lambda: self.documente_section.reset_documente(),
             fg_color="#cf1b1b",
             hover_color="#a50000",
             text_color="white",
             width=20,
             height=20,
-            corner_radius= 14,
+            corner_radius=14,
             font=("Arial", 10)
         )
         self.btn_reset_documente.pack(side="right", padx=5)
 
-        # ---- Restul codului tău original ---- 
         frame_butoane_documente = ctk.CTkFrame(frame_documente_col, fg_color="transparent")
         frame_butoane_documente.pack(pady=(0, 5), fill="x")
 
-        # Butoanele originale
         ctk.CTkButton(frame_butoane_documente, text="Adauga Document", 
-                    command=self.adauga_document, 
-                    fg_color="#1f4e78", 
-                    text_color="white",
-                    height=28,
-                    width=140).pack(side="left", padx=(30, 5))
+                      command=lambda: self.documente_section.adauga_document(), 
+                      fg_color="#1f4e78", 
+                      text_color="white",
+                      height=28,
+                      width=140).pack(side="left", padx=(30, 5))
 
         ctk.CTkButton(frame_butoane_documente, text="Link TransferNow", 
-                    command=self.adauga_link_transfernow,
-                    fg_color="#1f4e78",
-                    text_color="white",
-                    height=28,
-                    width=140).pack(side="right", padx=(5, 30))
+                      command=lambda: self.documente_section.adauga_link_transfernow(),
+                      fg_color="#1f4e78",
+                      text_color="white",
+                      height=28,
+                      width=140).pack(side="right", padx=(5, 30))
 
-        # Eticheta originală transfernow
         self.label_link_transfernow = ctk.CTkLabel(
             frame_documente_col,
             text="Link TransferNow: None",
@@ -214,7 +201,6 @@ class EmailApp:
         )
         self.label_link_transfernow.pack(pady=(0, 5))
 
-        # Lista documente originală
         self.frame_lista_documente = ctk.CTkScrollableFrame(
             frame_documente_col,
             fg_color="transparent",
@@ -224,9 +210,12 @@ class EmailApp:
         )
         self.frame_lista_documente.pack(pady=0, padx=0, fill="x", expand=False)
 
-        # Forțează dimensiuni fixe
         frame_documente_col.grid_propagate(False)
         frame_documente_col.configure(height=150)
+
+        # ---------- Instanțierea secțiunilor separate ----------
+        self.materiale_section = MaterialeSection(self, self.label_materiale, self.frame_lista_materiale)
+        self.documente_section = DocumenteSection(self, self.label_link_transfernow, self.frame_lista_documente)
 
         # ---------- Butoane de jos ----------
         frame_buttons = ctk.CTkFrame(root, corner_radius=15, fg_color="#f0f0f0")
@@ -252,170 +241,17 @@ class EmailApp:
         # ---------- Liste ----------
         self.materiale = []
         self.documente = []
-        self.link_transfernow = ""
-
-
-    # -------------------------------------------------------------------------
-    # Partea de MATERIALE
-    # -------------------------------------------------------------------------
-    def adauga_material(self):
-        material = self.pop_up_personalizat("Material", "Introduceti numele materialului:", width=350)
-        if material:
-            cantitate = self.pop_up_personalizat("Cantitate", f"Introduceti cantitatea pentru {material}:", width=200)
-            if cantitate:
-                unitate = self.pop_up_personalizat("Unitate de masura", f"Introduceti unitatea de masura pentru {material}:", width=150)
-                if unitate:
-                    self.materiale.append({'material': material, 'cantitate': cantitate, 'unitate_de_masura': unitate})
-                    self.label_materiale.configure(text=f"Materiale adaugate: {len(self.materiale)}")
-                    self.actualizeaza_lista_materiale()
-
-    def actualizeaza_lista_materiale(self):
-        for widget in self.frame_lista_materiale.winfo_children():
-            widget.destroy()
-        for idx, material in enumerate(self.materiale):
-            row_frame = ctk.CTkFrame(self.frame_lista_materiale, fg_color="transparent")
-            row_frame.pack(fill="x", pady=2)
-
-            text_mat = f"{idx + 1}. {material['material']} - {material['cantitate']} {material['unitate_de_masura']}"
-            label_material = ctk.CTkLabel(row_frame, text=text_mat, anchor="w", font=("Arial", 12))
-            label_material.pack(side="left", padx=5, pady=2)
-
-            btn_delete = ctk.CTkButton(
-                row_frame,
-                text="✕",
-                command=lambda i=idx: self.sterge_material(i),
-                fg_color="#cf1b1b",
-                hover_color="#a50000",
-                text_color="white",
-                width=30,
-                corner_radius=5
-            )
-            btn_delete.pack(side="right", padx=5, pady=2)
-
-    def sterge_material(self, index):
-        if 0 <= index < len(self.materiale):
-            self.materiale.pop(index)
-            self.label_materiale.configure(text=f"Materiale adaugate: {len(self.materiale)}")
-            self.actualizeaza_lista_materiale()
-
-    def reset_materiale(self):
-        self.materiale.clear()
-        self.label_materiale.configure(text="Materiale adaugate: 0")
-        for widget in self.frame_lista_materiale.winfo_children():
-            widget.destroy()        
-
+        self.link_transfernow = "" 
+    
     def reset_fields(self):
+        # Resetăm câmpurile de text
         self.entry_subiect.delete(0, 'end')
         self.entry_licitatie.delete(0, 'end')
         self.entry_cn.delete(0, 'end')
-        self.entry_destinatar.delete(0, 'end')
         self.entry_subiect.insert(0, "Cerere oferta")
-
-        self.materiale.clear()
-        self.documente.clear()
-        self.link_transfernow = ""
-
-        self.label_materiale.configure(text="Materiale adaugate: 0")
-        self.label_link_transfernow.configure(text="Link TransferNow: None")
-
-        for widget in self.frame_lista_materiale.winfo_children():
-            widget.destroy()
-        for widget in self.frame_lista_documente.winfo_children():
-            widget.destroy()
-
-        self.frame_lista_materiale.configure(height=0)
-        self.frame_lista_documente.configure(height=0)
-
-        messagebox.showinfo("Reset", "Toate campurile au fost resetate!")
-
-    # -------------------------------------------------------------------------
-    # Partea de ADĂUGARE DOCUMENTE
-    # -------------------------------------------------------------------------
-    def adauga_document(self):
-        fisiere = filedialog.askopenfilenames(
-            title="Selecteaza documente",
-            filetypes=[("PDF files", "*.pdf"), ("Word files", "*.docx"), ("All files", "*.*")]
-        )
-        if fisiere:
-            for fisier in fisiere:
-                self.documente.append(fisier)
-            self.afiseaza_documente()
-
-    def afiseaza_documente(self):
-        for widget in self.frame_lista_documente.winfo_children():
-            widget.destroy()
-        for index, document in enumerate(self.documente, start=1):
-            row = ctk.CTkFrame(self.frame_lista_documente, fg_color="transparent")
-            row.pack(fill="x", pady=2, padx=5)
-
-            label_doc = ctk.CTkLabel(row, text=f"{index}. {os.path.basename(document)}", anchor="w")
-            label_doc.pack(side="left", padx=5)
-
-            btn_delete = ctk.CTkButton(row, text="X", width=30, fg_color="red",
-                                       command=lambda i=index-1: self.sterge_document(i))
-            btn_delete.pack(side="right", padx=5)
-
-    def sterge_document(self, index):
-        if 0 <= index < len(self.documente):
-            self.documente.pop(index)
-            self.afiseaza_documente()
-
-    def adauga_link_transfernow(self):
-        link = self.pop_up_personalizat("Link", "Adaugati link ul de transfer:", width = 200)
-
-        if link:
-            self.link_transfernow = link
-            self.label_link_transfernow.configure(
-                text="Link TransferNow: Click aici",
-                font=("Arial", 12, "bold", "underline"),  # Bold + subliniere când există link
-                text_color="#1f4e78",  # Culoare albastră standard pentru link
-                cursor="hand2"  # Cursor de link
-            )
-
-            # Elimină bindingurile anterioare pentru a evita dublurile
-            self.label_link_transfernow.unbind("<Button-1>")
-            self.label_link_transfernow.unbind("<Enter>")
-            self.label_link_transfernow.unbind("<Leave>")
-
-            # Adaugă interactivitate
-            self.label_link_transfernow.bind("<Button-1>", lambda e: webbrowser.open(link))  # Deschide link
-            self.label_link_transfernow.bind("<Enter>", lambda e: self.label_link_transfernow.configure(text_color="#ff6600"))  # Hover portocaliu
-            self.label_link_transfernow.bind("<Leave>", lambda e: self.label_link_transfernow.configure(text_color="#1f4e78"))  # Revine la albastru
-        else:
-            self.link_transfernow = ""  # Asigură că e gol dacă utilizatorul anulează dialogul
-            self.label_link_transfernow.configure(
-                text="Link TransferNow: None",
-                font=("Arial", 12),  # Revine la font normal
-                text_color="#1f4e78",
-                cursor="arrow"  # Cursor normal, fără mână
-            )
-
-            # Elimină orice binding pentru hover sau click
-            self.label_link_transfernow.unbind("<Button-1>")
-            self.label_link_transfernow.unbind("<Enter>")
-            self.label_link_transfernow.unbind("<Leave>")
-
-    def reset_documente(self):
-        # Resetare lista documente
-        self.documente_adaugate = []
-        self.link_transfernow = ""  # Resetare variabilă link
-
-        # Resetare etichetă Link TransferNow
-        self.label_link_transfernow.configure(
-            text="Link TransferNow: None",
-            font=("Arial", 12),  # Revenire la font normal (fără bold sau subliniere)
-            text_color="#1f4e78",  # Revenire la culoarea inițială
-            cursor="arrow"  # Revenire la cursor normal
-        )
-
-        # Elimină orice binding de hover sau click
-        self.label_link_transfernow.unbind("<Button-1>")
-        self.label_link_transfernow.unbind("<Enter>")
-        self.label_link_transfernow.unbind("<Leave>")
-
-        # Curățare lista vizuală de documente
-        for widget in self.frame_lista_documente.winfo_children():
-            widget.destroy()      
+        # Resetăm secțiunile de materiale și documente
+        self.materiale_section.reset_materiale()
+        self.documente_section.reset_documente()    
 
     # -------------------------------------------------------------------------
     # Partea de TRIMITERE EMAIL + mini-editor -> EmailEditor
@@ -733,7 +569,6 @@ class EmailApp:
         def anuleaza():
             dialog.destroy()
 
-        # Bind ENTER pentru confirmare
         dialog.bind("<Return>", lambda event: confirma())
 
         ctk.CTkButton(dialog, text="OK", command=confirma).pack(side="left", padx=20, pady=20)
@@ -741,9 +576,9 @@ class EmailApp:
                 dialog, 
                 text="Cancel", 
                 command=anuleaza, 
-                fg_color="#cf1b1b",  # Roșu închis
-                hover_color="#a50000",  # Roșu mai intens la hover
-                text_color="white"  # Text alb pentru contrast
+                fg_color="#cf1b1b",
+                hover_color="#a50000",
+                text_color="white"
             ).pack(side="right", padx=20, pady=20)
 
 
