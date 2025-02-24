@@ -41,7 +41,7 @@ class EmailChipContainer(ctk.CTkFrame):
             border_width=0, 
             fg_color="transparent",
             height=28,
-            width = 1000
+            width = 600
         )
         self.entry.pack(side="right", fill="x", expand=True)
         self.entry.bind("<Return>", self.add_email)
@@ -50,7 +50,7 @@ class EmailChipContainer(ctk.CTkFrame):
         email = self.entry.get().strip()
         if email and email not in [chip.email for chip in self.email_chips]:
             chip = EmailChip(self.inner_frame, email, self.remove_email)
-            chip.pack(side="left", padx=0, pady=0)
+            chip.pack(side="left", padx=65, pady=0)
             self.email_chips.append(chip)
             self.entry.delete(0, "end")
 
@@ -100,12 +100,6 @@ class ScrollableEmailChipContainer(ctk.CTkFrame):
         self.email_chips = []
         self.scroll_frame.bind("<Configure>", self.update_scrollregion)
 
-    # Dacă dorești poți păstra metoda resize_canvas fără linia problematică:
-    def resize_canvas(self, event):
-        # Comentăm linia de mai jos pentru a nu forța lățimea:
-        # self.canvas.itemconfig(self.canvas_window, width=event.width)
-        self.after(5, self.update_scrollregion)
-        
     def add_email(self, event=None):
         email = self.entry.get().strip()
         if email and email not in [chip.email for chip in self.email_chips]:

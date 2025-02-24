@@ -51,20 +51,20 @@ class EmailApp:
         # Subiect
         ctk.CTkLabel(frame_details, text="Subiect:", font=("Arial", 12), text_color="#1f4e78")\
             .grid(row=0, column=0, sticky="w", padx=10, pady=5)
-        self.entry_subiect = ctk.CTkEntry(frame_details, border_color="#1f4e78")
+        self.entry_subiect = ctk.CTkEntry(frame_details, border_color="#1f4e78", fg_color="white")
         self.entry_subiect.insert(0, "Cerere oferta")
         self.entry_subiect.grid(row=0, column=1, padx=10, pady=5, sticky="ew")
 
         # Numele Licitației
         ctk.CTkLabel(frame_details, text="Numele Licitației:", font=("Arial", 12), text_color="#1f4e78")\
             .grid(row=1, column=0, sticky="w", padx=10, pady=5)
-        self.entry_licitatie = ctk.CTkEntry(frame_details, border_color="#1f4e78")
+        self.entry_licitatie = ctk.CTkEntry(frame_details, border_color="#1f4e78", fg_color="white")
         self.entry_licitatie.grid(row=1, column=1, padx=10, pady=5, sticky="ew")
 
         # Numărul CN
         ctk.CTkLabel(frame_details, text="Numărul CN:", font=("Arial", 12), text_color="#1f4e78")\
             .grid(row=2, column=0, sticky="w", padx=10, pady=5)
-        self.entry_cn = ctk.CTkEntry(frame_details, border_color="#1f4e78")
+        self.entry_cn = ctk.CTkEntry(frame_details, border_color="#1f4e78", fg_color="white")
         self.entry_cn.grid(row=2, column=1, padx=10, pady=5, sticky="ew")
 
         # Destinatar – etichetă și container pentru "chips"

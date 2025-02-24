@@ -3,4 +3,4 @@
 - La destinatar si cc pe langa bara orizontala de scroll sa bag si niste sageti stanga dreapta in marginile scrollului
 - Chip urile sa fie placeable din destinatar in cc si invers drag and drop
 - selectare furnizor sub cc
-- Am o zona moarta la dreapta entry ului destinatar si cc -> gen la container
+- sa urmareasca cursorul in container
