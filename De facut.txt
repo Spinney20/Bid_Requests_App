@@ -1,3 +1,6 @@
 - Gestionare furnizori mai complexa -> sa permita mai multe pers de contact
-- Daca am mai multe mail uri sa fie date ca input la update, nu sa fie tinute cu virgula manuala de la mine
 - daca am multi furnizori in gestionare furnizori sa dau mai jos cu scroll ca sa ii vad nu sa trag de limitele aplicatiei
+- La destinatar si cc pe langa bara orizontala de scroll sa bag si niste sageti stanga dreapta in marginile scrollului
+- Chip urile sa fie placeable din destinatar in cc si invers drag and drop
+- selectare furnizor sub cc
+- Am o zona moarta la dreapta entry ului destinatar si cc -> gen la container

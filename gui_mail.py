@@ -69,7 +69,7 @@ class EmailApp:
 
         # Destinatar – etichetă și container pentru "chips"
         ctk.CTkLabel(frame_details, text="Destinatar:", font=("Arial", 12), text_color="#1f4e78")\
-            .grid(row=3, column=0, sticky="w", padx=10, pady=(5, 0))
+            .grid(row=3, column=0, sticky="w", padx=10, pady=0)
         self.destinatar_container = ScrollableEmailChipContainer(frame_details, fg_color="transparent", width=500)
         self.destinatar_container.grid(row=3, column=1, padx=10, pady=0, sticky="ew")
         self.destinatar_container.grid_propagate(False)
@@ -79,7 +79,7 @@ class EmailApp:
         ctk.CTkLabel(frame_details, text="CC:", font=("Arial", 12), text_color="#1f4e78")\
             .grid(row=4, column=0, sticky="w", padx=10, pady=(5, 0))
         self.cc_container =  ScrollableEmailChipContainer(frame_details, fg_color="transparent", width=500)
-        self.cc_container.grid(row=4, column=1, padx=10, pady=5, sticky="ew")
+        self.cc_container.grid(row=4, column=1, padx=10, pady=0, sticky="ew")
  
 
         # ---------- Frame principal ----------
