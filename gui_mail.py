@@ -85,7 +85,7 @@ class EmailApp:
         frame_main = ctk.CTkFrame(root, fg_color="transparent")
         frame_main.pack(padx=20, pady=5, fill="both", expand=True)
         # Setăm weight-urile pentru redimensionarea dinamică (acestea se aplică la redimensionarea ferestrei)
-        frame_main.grid_columnconfigure(0, weight=2)  # Materiale
+        frame_main.grid_columnconfigure(0, weight=1)  # Materiale
         frame_main.grid_columnconfigure(1, weight=1)  # Documente
 
         # ---------- Materiale ----------

@@ -28,23 +28,35 @@ class MaterialeSection:
                     self.actualizeaza_lista_materiale()
 
     def actualizeaza_lista_materiale(self):
+        # Ștergem widget-urile anterioare din containerul listei
         for widget in self.frame_lista_materiale.winfo_children():
             widget.destroy()
         for idx, material in enumerate(self.materiale):
             row_frame = ctk.CTkFrame(self.frame_lista_materiale, fg_color="transparent")
             row_frame.pack(fill="x", pady=2)
-            text_mat = f"{idx + 1}. {material['material']} - {material['cantitate']} {material['unitate_de_masura']}"
+            
+            # Preluăm denumirea materialului
+            mat_name = material['material']
+            # Dacă numele are 20 sau mai multe caractere, îl trunchiem după al 16-lea caracter și adăugăm "..."
+            if len(mat_name) >= 24:
+                mat_name = mat_name[:20] + "..."
+                
+            # Combinăm informațiile: numărul, denumirea (trunchiată dacă e cazul), cantitatea și unitatea de măsură
+            text_mat = f"{idx + 1}. {mat_name} - {material['cantitate']} {material['unitate_de_masura']}"
             label_material = ctk.CTkLabel(row_frame, text=text_mat, anchor="w", font=("Arial", 12))
             label_material.pack(side="left", padx=5, pady=2)
+            
             btn_delete = ctk.CTkButton(
-                row_frame,
-                text="✕",
-                command=lambda i=idx: self.sterge_material(i),
-                fg_color="#cf1b1b",
-                hover_color="#a50000",
-                text_color="white",
-                width=30,
-                corner_radius=5
+            row_frame,
+            text="✕",
+            command=lambda i=idx: self.sterge_material(i),
+            fg_color="#cf1b1b",
+            hover_color="#a50000",
+            text_color="white",
+            width=10,        # valoare redusă
+            height=10,       # adaugă și height mai mic
+            corner_radius=3, # colțuri mai puțin rotunjite
+            font=("Arial", 13) # font cu dimensiune mai mică
             )
             btn_delete.pack(side="right", padx=5, pady=2)
 

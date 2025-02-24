@@ -32,16 +32,28 @@ class DocumenteSection:
         for index, document in enumerate(self.documente, start=1):
             row = ctk.CTkFrame(self.frame_lista_documente, fg_color="transparent")
             row.pack(fill="x", pady=2, padx=5)
-            label_doc = ctk.CTkLabel(row, text=f"{index}. {os.path.basename(document)}", anchor="w")
+
+            # Obținem numele fișierului și verificăm lungimea
+            nume_document = os.path.basename(document)
+            if len(nume_document) > 40:
+                nume_document = nume_document[:37] + "..."  # Trunchiere la 45 de caractere
+
+            label_doc = ctk.CTkLabel(row, text=f"{index}. {nume_document}", anchor="w")
             label_doc.pack(side="left", padx=5)
+
             btn_delete = ctk.CTkButton(
                 row,
-                text="X",
-                width=30,
-                fg_color="red",
-                command=lambda i=index-1: self.sterge_document(i)
+                text="✕",
+                command=lambda i=index-1: self.sterge_document(i),
+                fg_color="#cf1b1b",
+                hover_color="#a50000",
+                text_color="white",
+                width=10,        # Buton mai mic
+                height=10,       # Înălțime mai mică
+                corner_radius=3, # Colțuri mai puțin rotunjite
+                font=("Arial", 13) # Font mai mic
             )
-            btn_delete.pack(side="right", padx=5)
+            btn_delete.pack(side="right", padx=5, pady=2)
 
     def sterge_document(self, index):
         if 0 <= index < len(self.documente):
