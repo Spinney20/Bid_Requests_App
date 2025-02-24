@@ -84,7 +84,7 @@ class EmailApp:
         # ---------- Frame principal ----------
         frame_main = ctk.CTkFrame(root, fg_color="transparent")
         frame_main.pack(padx=20, pady=5, fill="both", expand=True)
-        # Atribuim o pondere mai mare pentru coloana Materiale
+        # Setăm weight-urile pentru redimensionarea dinamică (acestea se aplică la redimensionarea ferestrei)
         frame_main.grid_columnconfigure(0, weight=2)  # Materiale
         frame_main.grid_columnconfigure(1, weight=1)  # Documente
 
@@ -92,8 +92,9 @@ class EmailApp:
         frame_materiale_col = ctk.CTkFrame(frame_main, fg_color="#f0f0f0", corner_radius=15)
         frame_materiale_col.grid(row=0, column=0, padx=0, pady=0, sticky="nsew")
 
-        frame_materiale_col.configure(height=250, width=250)
-        frame_materiale_col.pack_propagate(False) 
+        # Setăm dimensiunea inițială pentru Materiale: lățime de 300 pixeli și înălțime de 250 pixeli
+        frame_materiale_col.configure(height=250, width=300)
+        frame_materiale_col.pack_propagate(False)  # Previne redimensionarea automată în funcție de conținut
 
         title_reset_frame_mat = ctk.CTkFrame(frame_materiale_col, fg_color="transparent")
         title_reset_frame_mat.pack(pady=(5, 0), fill="x", expand=True)
@@ -121,11 +122,11 @@ class EmailApp:
         self.btn_reset_materiale.pack(side="right", padx=5)
 
         ctk.CTkButton(frame_materiale_col, 
-                      text="Adauga Material", 
-                      command=lambda: self.materiale_section.adauga_material(),
-                      fg_color="#1f4e78", 
-                      text_color="white", 
-                      height=28).pack(pady=(0, 5), padx=5)
+                    text="Adauga Material", 
+                    command=lambda: self.materiale_section.adauga_material(),
+                    fg_color="#1f4e78", 
+                    text_color="white", 
+                    height=28).pack(pady=(0, 5), padx=5)
 
         label_reset_frame = ctk.CTkFrame(frame_materiale_col, fg_color="transparent")
         label_reset_frame.pack(pady=(0, 5), padx=5)
@@ -150,6 +151,10 @@ class EmailApp:
         # ---------- Documente ----------
         frame_documente_col = ctk.CTkFrame(frame_main, fg_color="#f0f0f0", corner_radius=15)
         frame_documente_col.grid(row=0, column=1, padx=10, pady=0, sticky="nsew")
+
+        # Setăm dimensiunea inițială pentru Documente: lățime de 350 pixeli și înălțime de 300 pixeli
+        frame_documente_col.configure(height=300, width=350)
+        frame_documente_col.grid_propagate(False)  # Previne modificarea automată a dimensiunii
 
         title_reset_frame_doc = ctk.CTkFrame(frame_documente_col, fg_color="transparent")
         title_reset_frame_doc.pack(pady=(5, 0), fill="x", expand=True)
@@ -180,18 +185,18 @@ class EmailApp:
         frame_butoane_documente.pack(pady=(0, 5), fill="x")
 
         ctk.CTkButton(frame_butoane_documente, text="Adauga Document", 
-                      command=lambda: self.documente_section.adauga_document(), 
-                      fg_color="#1f4e78", 
-                      text_color="white",
-                      height=28,
-                      width=140).pack(side="left", padx=(30, 5))
+                    command=lambda: self.documente_section.adauga_document(), 
+                    fg_color="#1f4e78", 
+                    text_color="white",
+                    height=28,
+                    width=140).pack(side="left", padx=(30, 5))
 
         ctk.CTkButton(frame_butoane_documente, text="Link TransferNow", 
-                      command=lambda: self.documente_section.adauga_link_transfernow(),
-                      fg_color="#1f4e78",
-                      text_color="white",
-                      height=28,
-                      width=140).pack(side="right", padx=(5, 30))
+                    command=lambda: self.documente_section.adauga_link_transfernow(),
+                    fg_color="#1f4e78",
+                    text_color="white",
+                    height=28,
+                    width=140).pack(side="right", padx=(5, 30))
 
         self.label_link_transfernow = ctk.CTkLabel(
             frame_documente_col,
