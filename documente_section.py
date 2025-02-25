@@ -31,12 +31,12 @@ class DocumenteSection:
             widget.destroy()
         for index, document in enumerate(self.documente, start=1):
             row = ctk.CTkFrame(self.frame_lista_documente, fg_color="transparent")
-            row.pack(fill="x", pady=2, padx=5)
+            row.pack(fill="x", pady=0, padx=5)
 
             # Obținem numele fișierului și verificăm lungimea
             nume_document = os.path.basename(document)
             if len(nume_document) > 40:
-                nume_document = nume_document[:37] + "..."  # Trunchiere la 45 de caractere
+                nume_document = nume_document[:37] + "..."  # Trunchiere
 
             label_doc = ctk.CTkLabel(row, text=f"{index}. {nume_document}", anchor="w")
             label_doc.pack(side="left", padx=5)
@@ -65,7 +65,7 @@ class DocumenteSection:
         if link:
             self.link_transfernow = link
             self.label_link_transfernow.configure(
-                text="Link TransferNow: Click aici",
+                text="Link Transfer: ADAUGAT (Click aici)",
                 font=("Arial", 12, "bold", "underline"),
                 text_color="#1f4e78",
                 cursor="hand2"
@@ -81,7 +81,7 @@ class DocumenteSection:
         else:
             self.link_transfernow = ""
             self.label_link_transfernow.configure(
-                text="Link TransferNow: None",
+                text="Link Transfer: None",
                 font=("Arial", 12),
                 text_color="#1f4e78",
                 cursor="arrow"
@@ -94,7 +94,7 @@ class DocumenteSection:
         self.documente.clear()
         self.link_transfernow = ""
         self.label_link_transfernow.configure(
-            text="Link TransferNow: None",
+            text="Link Transfer: None",
             font=("Arial", 12),
             text_color="#1f4e78",
             cursor="arrow"

@@ -3,12 +3,11 @@ import tkinter
 from tkinter import messagebox
 from PIL import Image
 from mail import generare_mesaj
-from suppliers_db import SuppliersDB  # Importăm clasa BDD
+from suppliers_db import SuppliersDB
 from preview_manager import PreviewManager
 from email_editor import EmailEditor
 from email_chip import ScrollableEmailChipContainer
 
-# Importăm secțiunile separate pentru materiale și documente
 from materiale_section import MaterialeSection
 from documente_section import DocumenteSection
 
@@ -93,7 +92,7 @@ class EmailApp:
         frame_materiale_col.grid(row=0, column=0, padx=0, pady=0, sticky="nsew")
 
         # Setăm dimensiunea inițială pentru Materiale: lățime de 300 pixeli și înălțime de 250 pixeli
-        frame_materiale_col.configure(height=250, width=300)
+        frame_materiale_col.configure(height=200, width=300)
         frame_materiale_col.pack_propagate(False)  # Previne redimensionarea automată în funcție de conținut
 
         title_reset_frame_mat = ctk.CTkFrame(frame_materiale_col, fg_color="transparent")
@@ -152,8 +151,7 @@ class EmailApp:
         frame_documente_col = ctk.CTkFrame(frame_main, fg_color="#f0f0f0", corner_radius=15)
         frame_documente_col.grid(row=0, column=1, padx=10, pady=0, sticky="nsew")
 
-        # Setăm dimensiunea inițială pentru Documente: lățime de 350 pixeli și înălțime de 300 pixeli
-        frame_documente_col.configure(height=300, width=350)
+        frame_documente_col.configure(height=200, width=350)
         frame_documente_col.grid_propagate(False)  # Previne modificarea automată a dimensiunii
 
         title_reset_frame_doc = ctk.CTkFrame(frame_documente_col, fg_color="transparent")
@@ -191,16 +189,16 @@ class EmailApp:
                     height=28,
                     width=140).pack(side="left", padx=(30, 5))
 
-        ctk.CTkButton(frame_butoane_documente, text="Link TransferNow", 
+        ctk.CTkButton(frame_butoane_documente, text="Link Transfer", 
                     command=lambda: self.documente_section.adauga_link_transfernow(),
                     fg_color="#1f4e78",
                     text_color="white",
                     height=28,
-                    width=140).pack(side="right", padx=(5, 30))
+                    width=140).pack(padx=(5, 30))
 
         self.label_link_transfernow = ctk.CTkLabel(
             frame_documente_col,
-            text="Link TransferNow: None",
+            text="Link Transfer: None",
             font=("Arial", 12),
             text_color="#1f4e78"
         )
@@ -553,10 +551,8 @@ class EmailApp:
         pos_x = root_x + (root_width // 2) - (popup_width // 2)
         pos_y = root_y + (root_height // 2) - (popup_height // 2)
 
-        # Aplicăm poziția corectă
         dialog.geometry(f"{popup_width}x{popup_height}+{pos_x}+{pos_y}")
 
-        # Afișăm pop-up-ul doar după ce are poziția corectă
         dialog.deiconify()
 
         dialog.grab_set()

@@ -33,7 +33,7 @@ class MaterialeSection:
             widget.destroy()
         for idx, material in enumerate(self.materiale):
             row_frame = ctk.CTkFrame(self.frame_lista_materiale, fg_color="transparent")
-            row_frame.pack(fill="x", pady=2)
+            row_frame.pack(fill="x", pady=0)
             
             # Preluăm denumirea materialului
             mat_name = material['material']
@@ -44,7 +44,7 @@ class MaterialeSection:
             # Combinăm informațiile: numărul, denumirea (trunchiată dacă e cazul), cantitatea și unitatea de măsură
             text_mat = f"{idx + 1}. {mat_name} - {material['cantitate']} {material['unitate_de_masura']}"
             label_material = ctk.CTkLabel(row_frame, text=text_mat, anchor="w", font=("Arial", 12))
-            label_material.pack(side="left", padx=5, pady=2)
+            label_material.pack(side="left", padx=5, pady=0)
             
             btn_delete = ctk.CTkButton(
             row_frame,

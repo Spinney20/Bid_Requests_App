@@ -4,3 +4,4 @@
 - Chip urile sa fie placeable din destinatar in cc si invers drag and drop
 - selectare furnizor sub cc
 - sa urmareasca cursorul in container
+TODO CEL MAI IMPORTANT : PRELUARE MATERIALE SI CANTITATI DINTR UN EXCEL
